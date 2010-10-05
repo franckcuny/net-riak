@@ -232,7 +232,7 @@ The RiakMapReduce object allows you to build up and run a map/reduce operation o
 
 =item add
 
-arguments: bucketname or arrays or Riak::Object
+arguments: bucketname or arrays or L<Net::Riak::Object>
 
 return: a Net::Riak::MapReduce object
 
