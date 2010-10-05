@@ -159,17 +159,18 @@ sub run {
 
     my $content = JSON::encode_json($job);
 
-    my $request =
-      $self->client->request('POST', [$self->client->mapred_prefix]);
+    my $request = $self->client->new_request(
+        'POST', [$self->client->mapred_prefix]
+    );
     $request->content($content);
 
-    my $response = $self->client->useragent->request($request);
+    my $response = $self->client->send_request($request);
 
     unless ($response->is_success) {
-        die $response->content;
+        die "MapReduce query failed: ".$response->status_line;
     }
 
-    my $result   = JSON::decode_json($response->content);
+    my $result = JSON::decode_json($response->content);
 
     if ( $timeout && ( $ua_timeout != $self->client->useragent->timeout() ) ) {
         $self->client->useragent->timeout($ua_timeout);

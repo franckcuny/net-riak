@@ -13,7 +13,7 @@ has client => (
     is       => 'rw',
     isa      => 'Net::Riak::Client',
     required => 1,
-    handles  => [qw/request useragent is_alive/]
+    handles  => [qw/is_alive http_request http_response/]
 );
 
 sub BUILDARGS {
@@ -39,6 +39,8 @@ sub bucket {
     $obj->store;
 
     my $obj = $bucket->get('new_post');
+    my $req = $client->http_request; # last request
+    $client->http_response # last response
 
 =head1 DESCRIPTION
 
@@ -139,6 +141,14 @@ Start assembling a Map/Reduce operation
     my $map_reduce = $client->add(..)->map(..)->reduce("function ...");
 
 Start assembling a Map/Reduce operation
+
+=method http_request
+
+Returns the HTTP::Request object from the last request
+
+=method http_response
+
+Returns a HTTP::Response object from the last request
 
 =head2 SEE ALSO
 
