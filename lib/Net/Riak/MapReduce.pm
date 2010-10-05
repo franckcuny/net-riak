@@ -48,10 +48,17 @@ sub add {
     my $self = shift;
     my $arg  = shift;
 
+    if (ref $arg eq 'ARRAY') {
+        do{
+            $self->add_input($arg);
+        }while(my $arg = shift @_);
+        return $self;
+    }
+    
     if (!scalar @_) {
         if (blessed($arg)) {
             $self->add_object($arg);
-          } else {
+        } else {
             $self->add_bucket($arg);
         }
     }
@@ -225,11 +232,21 @@ The RiakMapReduce object allows you to build up and run a map/reduce operation o
 
 =item add
 
-arguments: bucketname
+arguments: bucketname or arrays or Riak::Object
 
 return: a Net::Riak::MapReduce object
 
 Add inputs to a map/reduce operation. This method takes three different forms, depending on the provided inputs. You can specify either a RiakObject, a string bucket name, or a bucket, key, and additional arg.
+
+Create a MapReduce job
+
+    my $mapred = $riak->add( ["alice","p1"],["alice","p2"],["alice","p5"] );
+    
+Add your inputs to a MapReduce job
+
+    $mapred->add( ["alice","p1"],["alice","p2"] );
+    $mapred->add( "alice", "p5" );
+    $mapred->add( $riak->bucket("alice")->get("p6") );
 
 =item add_object
 
