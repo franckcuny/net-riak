@@ -139,3 +139,7 @@ Start assembling a Map/Reduce operation
     my $map_reduce = $client->add(..)->map(..)->reduce("function ...");
 
 Start assembling a Map/Reduce operation
+
+=head2 SEE ALSO
+
+Net::Riak::MapReduce

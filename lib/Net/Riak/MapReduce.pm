@@ -10,7 +10,7 @@ use Net::Riak::LinkPhase;
 use Net::Riak::MapReducePhase;
 
 with 'Net::Riak::Role::Base' =>
-  {classes => [{name => 'client', required => 0}]};
+  {classes => [{name => 'client', required => 1}]};
 
 has phases => (
     traits     => ['Array'],
@@ -50,7 +50,7 @@ sub add {
 
     if (!scalar @_) {
         if (blessed($arg)) {
-            $self->add_object($arg);
+            $self->add_object($arg); 
           } else {
             $self->add_bucket($arg);
         }
@@ -103,7 +103,7 @@ sub map {
     my $map_reduce = Net::Riak::MapReducePhase->new(
         type     => 'map',
         function => $function,
-        keep     => $options{keep} || JSON::false,
+        keep     => $options{keep} ? JSON::true : JSON::false,
         arg      => $options{arg} || [],
     );
     $self->add_phase($map_reduce);
@@ -159,6 +159,10 @@ sub run {
     $request->content($content);
     my $response = $self->client->useragent->request($request);
 
+    unless ($response->is_success) {
+        die $response->content;
+    }
+
     my $result   = JSON::decode_json($response->content);
 
     my @phases = $self->phases;
@@ -183,7 +187,31 @@ sub run {
 
 =head1 SYNOPSIS
 
+ use Net::Riak;
+
+ my $client = Net::Riak->new(..);
+
+ $client->add('Cats')
+    ->map(qq/ function (value) {
+             return [value.toSource()]
+           }
+    /);
+
+ my $json = $query->run;
+
+ # OR
+
+ my $query = Net::Riak::MapReduce->new(
+    client => $client
+ );
+
+ my $json = $query->add_bucket('')->map('Riak.mapValuesJson')
+    ->reduce('..')
+    ->run;
+
 =head1 DESCRIPTION
+
+Used to construct map/reduce querys.
 
 =head2 ATTRIBUTES
 
@@ -201,20 +229,60 @@ sub run {
 
 =head2 METHODS
 
+=over 4
+
 =method add
 
 Add inputs to a map/reduce operation. This method takes three different forms, depending on the provided inputs. You can specify either a RiakObject, a string bucket name, or a bucket, key, and additional arg.
 
 =method add_object
 
+Add a Net::Riak::Object as an input to a map/reduce query.
+
 =method add_bucket_key_data
 
 =method add_bucket
+
+Add a bucket by name, as an input to a map/reduce query.
 
 =method link
 
 =method map
 
+Adds a map phase to the current query. 
+
+ keep - determines if the output of the function should be kept
+ args - passed as arguments to the JavaScript function
+
+ ->map("function () {..}", keep => 0, args => ['foo', 'bar']);
+
+Named functions can also be used.
+
+ -map('Riak.mapValuesJson'); # de-serializes data into JSON
+
 =method reduce
 
-=method run
+Adds a reduce phase to the current query.
+
+ ->reduce("function () {..}", keep => 1, args => ['foo', 'bar']);
+
+=method run 
+
+Executes the query, preforming a HTTP request via Riak's REST API.
+
+It will attempt to de-serialize the JSON response to a perl structure.
+
+=back
+
+=head2 SEE ALSO
+
+REST API
+
+https://wiki.basho.com/display/RIAK/MapReduce#MapReduce-MapReduceviatheRESTAPI
+
+List of built-in named functions for map / reduce phases
+
+http://hg.basho.com/riak/src/tip/doc/js-mapreduce.org#cl-496
+
+=cut
+
