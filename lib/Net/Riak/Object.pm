@@ -219,38 +219,33 @@ sub sibling {
     $obj;
 }
 
+
+sub _build_link {
+    my ($self,$obj,$tag) = @_;
+    blessed $obj && $obj->isa('Net::Riak::Link')
+    ? $obj
+    : Net::Riak::Link->new(
+          bucket => $self->bucket,
+          key    => $self->key,
+          tag    => $tag || $self->bucket->name,
+      );
+}
+
+around [qw{append_link remove_link add_link}] => sub{
+   my $next = shift;
+   my $self = shift;
+   $self->$next($self->_build_link(@_));
+};
+
 sub add_link {
-    my ($self, $obj, $tag) = @_;
-    my $new_link;
-    if (blessed $obj && $obj->isa('Net::Riak::Link')) {
-        $new_link = $obj;
-    }
-    else {
-        $new_link = Net::Riak::Link->new(
-            bucket => $self->bucket,
-            key    => $self->key,
-            tag    => $tag || $self->bucket->name,
-        );
-    }
-    $self->remove_link($new_link);
-    $self->append_link($new_link);
+    my ($self, $link) = @_;
+    $self->remove_link($link);
+    $self->append_link($link);
     $self;
 }
 
 sub remove_link {
-    my ($self, $obj, $tag) = @_;
-    my $new_link;
-    if (blessed $obj && $obj->isa('Net::Riak::Link')) {
-        $new_link = $obj;
-    }
-    else {
-        $new_link = Net::Riak::Link->new(
-            bucket => $self->bucket,
-            key    => $self->key,
-            tag    => $tag || ''
-        );
-    }
-
+    my ($self, $link) = @_;
     # XXX purge links!
 }
 
