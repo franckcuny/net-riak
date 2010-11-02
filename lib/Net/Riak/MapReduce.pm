@@ -54,7 +54,7 @@ sub add {
         }while(my $arg = shift @_);
         return $self;
     }
-    
+
     if (!scalar @_) {
         if (blessed($arg)) {
             $self->add_object($arg);
@@ -212,7 +212,7 @@ sub run {
 
     my $query = $riak->add("Cats");
     $query->map(
-        'function(v, d, a) { return [v]; }', 
+        'function(v, d, a) { return [v]; }',
         arg => [qw/some params to your function/]
     );
 

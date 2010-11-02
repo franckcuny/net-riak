@@ -30,13 +30,13 @@ has client_id => (
 has http_request => (
     is => 'rw',
     isa => 'HTTP::Request',
-); 
+);
 
 has http_response => (
     is => 'rw',
     isa => 'HTTP::Response',
     handles => ['is_success']
-); 
+);
 
 with 'Net::Riak::Role::UserAgent';
 with qw/
