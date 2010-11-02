@@ -61,7 +61,7 @@ sub store {
     my $params = {returnbody => 'true', w => $w, dw => $dw};
 
     my $request =
-      $self->client->request('PUT',
+      $self->client->new_request('PUT',
         [$self->client->prefix, $self->bucket->name, $self->key], $params);
 
     $request->header('X-Riak-ClientID' => $self->client->client_id);
@@ -82,7 +82,7 @@ sub store {
         $request->content($self->data);
     }
 
-    my $response = $self->client->useragent->request($request);
+    my $response = $self->client->send_request($request);
     $self->populate($response, [200, 204, 300]);
     $self;
 }
@@ -98,10 +98,10 @@ sub load {
     my $params = {r => $self->r};
 
     my $request =
-      $self->client->request('GET',
+      $self->client->new_request('GET',
         [$self->client->prefix, $self->bucket->name, $self->key], $params);
 
-    my $response = $self->client->useragent->request($request);
+    my $response = $self->client->send_request($request);
     $self->populate($response, [200, 300, 404]);
     $self;
 }
@@ -113,10 +113,10 @@ sub delete {
     my $params = {dw => $dw};
 
     my $request =
-      $self->client->request('DELETE',
+      $self->client->new_request('DELETE',
         [$self->client->prefix, $self->bucket->name, $self->key], $params);
 
-    my $response = $self->client->useragent->request($request);
+    my $response = $self->client->send_request($request);
     $self->populate($response, [204, 404]);
     $self;
 }
@@ -205,9 +205,9 @@ sub sibling {
     my $params = {r => $r, vtag => $vtag};
 
     my $request =
-      $self->client->request('GET',
+      $self->client->new_request('GET',
         [$self->client->prefix, $self->bucket->name, $self->key], $params);
-    my $response = $self->client->useragent->request($request);
+    my $response = $self->client->send_request($request);
 
     my $obj = Net::Riak::Object->new(
         client => $self->client,

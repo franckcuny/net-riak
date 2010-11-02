@@ -8,8 +8,9 @@ use Carp;
 use Net::Riak::Object;
 
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
-with 'Net::Riak::Role::Base' =>
-  {classes => [{name => 'client', required => 1}]};
+with 'Net::Riak::Role::Base' => {
+    classes => [{ name => 'client', required => 1, }]
+};
 
 has name => (
     is       => 'ro',
@@ -84,14 +85,14 @@ sub get_properties {
     $params->{props} = 'true'  unless exists $params->{props};
     $params->{keys}  = 'false' unless exists $params->{keys};
 
-    my $request =
-      $self->client->request('GET', [$self->client->prefix, $self->name],
-        $params);
+    my $request = $self->client->new_request(
+        'GET', [$self->client->prefix, $self->name], $params
+    );
 
-    my $response = $self->client->useragent->request($request);
+    my $response = $self->client->send_request($request);
 
-    if (!$response->is_success) {
-        die "Error getting bucket properties: " . $response->status_line . "\n";
+    unless ($response->is_success) {
+        die "Error getting bucket properties: ".$response->status_line."\n";
     }
 
     if ($params->{keys} ne 'stream') {
@@ -119,13 +120,16 @@ sub get_properties {
 sub set_properties {
     my ($self, $props) = @_;
 
-    my $request = $self->client->request('PUT', [$self->client->prefix, $self->name]);
+    my $request = $self->client->new_request(
+        'PUT', [$self->client->prefix, $self->name]
+    );
+
     $request->header('Content-Type' => $self->content_type);
     $request->content(JSON::encode_json({props => $props}));
-    my $response = $self->client->useragent->request($request);
 
-    if (!$response->is_success) {
-        die "Error setting bucket properties: " . $response->status_line . "\n";
+    my $response = $self->client->send_request($request);
+    unless ($response->is_success) {
+        die "Error setting bucket properties: ".$response->status_line."\n";
     }
 }
 
