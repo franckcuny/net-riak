@@ -49,7 +49,7 @@ has siblings => (
         has_siblings    => 'count',
         has_no_siblings => 'is_empty',
     },
-    clearer => '_clear_links',
+    clearer => '_clear_siblings',
 );
 
 sub store {
