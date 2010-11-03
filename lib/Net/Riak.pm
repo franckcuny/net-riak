@@ -38,7 +38,9 @@ sub bucket {
     my $obj    = $bucket->new_object('new_post', {title => 'foo', content => 'bar'});
     $obj->store;
 
-    my $obj = $bucket->get('new_post');
+    $obj = $bucket->get('new_post');
+    say "title for ".$obj->key." is ".$obj->data->{title};
+
     my $req = $client->http_request; # last request
     $client->http_response # last response
 
