@@ -65,6 +65,15 @@ sub get {
     $obj;
 }
 
+sub delete_object {
+    my ($self, $key) = @_;
+    Net::Riak::Object->new(
+        client => $self->client,
+        bucket => $self,
+        key    => $key
+    )->delete;
+}
+
 sub set_property {
     my ($self, $key, $value) = @_;
     $self->set_properties({$key => $value});
@@ -159,6 +168,8 @@ sub new_object {
     my $obj2 = $bucket->new_object('foo2', {...});
     $object->store;
 
+    $bucket->delete_object($key);
+
 =head1 DESCRIPTION
 
 The L<Net::Riak::Bucket> object allows you to access and change information about a Riak bucket, and provides methods to create or retrieve objects within the bucket.
@@ -208,6 +219,12 @@ Create a new L<Net::Riak::Object> object. Additional Object constructor argument
     my $obj = $bucket->get($key, [$r]);
 
 Retrieve an object from Riak.
+
+=item delete_object
+
+    $bucket->delete_object($key);
+
+Delete an object by key
 
 =item n_val
 
