@@ -18,7 +18,9 @@ has useragent => (
         $opts{MaxLineLength} = 65_536;
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = %opts;
 
-        my $ua = LWP::UserAgent->new;
+        my $ua = LWP::UserAgent->new(
+            timeout => $self->ua_timeout
+        );
         $ua;
     }
 );
