@@ -145,8 +145,7 @@ sub populate {
     if (!grep { $status == $_ } @$expected) {
         confess "Expected status "
           . (join(', ', @$expected))
-          . ", received: \n"
-          . $http_response->as_string; 
+          . ", received $status"
     }
 
     if ($status == 404) {
