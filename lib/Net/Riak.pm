@@ -33,7 +33,11 @@ sub bucket {
 
 =head1 SYNOPSIS
 
-    my $client = Net::Riak->new(host => 'http://10.0.0.40:8098');
+    my $client = Net::Riak->new(
+        host => 'http://10.0.0.40:8098', 
+        ua_timeout => 900
+    );
+
     my $bucket = $client->bucket('blog');
     my $obj    = $bucket->new_object('new_post', {title => 'foo', content => 'bar'});
     $obj->store;
@@ -103,6 +107,10 @@ DW value setting for this client (default 2)
 client_id for this client
 
 =back
+
+=item B<ua_timeout>
+
+timeout for L<LWP::UserAgent> in seconds, defaults to 3.
 
 =head1 METHODS
 

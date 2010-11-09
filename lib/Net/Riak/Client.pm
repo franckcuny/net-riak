@@ -38,6 +38,12 @@ has http_response => (
     handles => ['is_success']
 );
 
+has ua_timeout => (
+    is  => 'rw',
+    isa => 'Int',
+    default => 3
+);
+
 with 'Net::Riak::Role::UserAgent';
 with qw/
   Net::Riak::Role::REST
