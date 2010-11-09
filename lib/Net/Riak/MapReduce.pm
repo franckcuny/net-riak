@@ -56,8 +56,10 @@ sub add {
     }
 
     if (!scalar @_) {
-        if (blessed($arg)) {
+        if ($arg->isa('Net::Riak::Object')) {
             $self->add_object($arg);
+        } elsif ($arg->isa('Net::Riak::Bucket')) {
+            $self->add_bucket($arg->name);
         } else {
             $self->add_bucket($arg);
         }
@@ -164,6 +166,7 @@ sub run {
         $job->{timeout} = $timeout;
     }
 
+
     my $content = JSON::encode_json($job);
 
     my $request = $self->client->new_request(
@@ -253,7 +256,7 @@ The MapReduce object allows you to build up and run a map/reduce operations on R
 
 =head2 add
 
-arguments: bucketname or arrays or L<Net::Riak::Object>
+arguments: L<Net::Riak::Bucket> / Bucket name /  L<Net::Riak::Object> / Array
 
 return: a Net::Riak::MapReduce object
 
