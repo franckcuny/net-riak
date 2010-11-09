@@ -143,9 +143,10 @@ sub populate {
     $self->data($http_response->content);
 
     if (!grep { $status == $_ } @$expected) {
-        croak "Expected status "
+        confess "Expected status "
           . (join(', ', @$expected))
-          . ", received $status";
+          . ", received: \n"
+          . $http_response->as_string; 
     }
 
     if ($status == 404) {
