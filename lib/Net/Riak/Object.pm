@@ -225,8 +225,8 @@ sub _build_link {
     blessed $obj && $obj->isa('Net::Riak::Link')
     ? $obj
     : Net::Riak::Link->new(
-          bucket => $self->bucket,
-          key    => $self->key,
+          bucket => $obj->bucket,
+          key    => $obj->key,
           tag    => $tag || $self->bucket->name,
       );
 }
