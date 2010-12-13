@@ -6,7 +6,7 @@ use Net::Riak::Client;
 use Net::Riak::Bucket;
 use Net::Riak::Link;
 
-my $client = Net::Riak::Client->new();
+my $client = Net::Riak::Client->with_traits('Net::Riak::Transport::REST')->new();
 my $bucket = Net::Riak::Bucket->new(name => 'foo', client => $client);
 
 ok my $link = Net::Riak::Link->new(bucket => $bucket), 'link created';
