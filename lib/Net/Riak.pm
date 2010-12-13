@@ -18,7 +18,11 @@ has client => (
 
 sub BUILDARGS {
     my ($class, %args) = @_;
-    my $client = Net::Riak::Client->new(%args);
+
+    my $transport = $args{transport} || 'REST';
+    my $trait = "Net::Riak::Transport::".$transport;
+
+    my $client = Net::Riak::Client->with_traits($trait)->new(%args);
     $args{client} = $client;
     \%args;
 }
