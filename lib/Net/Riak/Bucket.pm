@@ -5,12 +5,27 @@ package Net::Riak::Bucket;
 use JSON;
 use Moose;
 use Carp;
+
 use Net::Riak::Object;
+use Net::Riak::Types Client => {-as => 'Client_T'};
 
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
-with 'Net::Riak::Role::Base' => {
-    classes => [{ name => 'client', required => 1, }]
-};
+# with 'Net::Riak::Role::Base' => {
+#     classes => [{ name => 'client', required => 1, }]
+# };
+
+has client => (
+    is       => 'rw',
+    isa      => Client_T,
+    required => 1,
+    # handles  => [
+    #     qw(
+    #       get_keys
+    #       get_properties
+    #       set_properties
+    #       )
+    # ],
+);
 
 has name => (
     is       => 'ro',
@@ -47,10 +62,11 @@ sub allow_multiples {
 
 sub get_keys {
     my ($self, $params) = @_;
-    my $key_mode = delete($params->{stream}) ? 'stream' : 'true';
-    $params = { props => 'false', keys => $key_mode, %$params };
-    my $properties = $self->get_properties($params);
-    return $properties->{keys};
+    $self->client->get_keys($self->name);
+    # my $key_mode = delete($params->{stream}) ? 'stream' : 'true';
+    # $params = { props => 'false', keys => $key_mode, %$params };
+    # my $properties = $self->get_properties($params);
+    # return $properties->{keys};
 }
 
 sub get {
@@ -87,59 +103,12 @@ sub get_property {
 
 sub get_properties {
     my ($self, $params) = @_;
-
-    # Callbacks require stream mode
-    $params->{keys}  = 'stream' if $params->{cb};
-
-    $params->{props} = 'true'  unless exists $params->{props};
-    $params->{keys}  = 'false' unless exists $params->{keys};
-
-    my $request = $self->client->new_request(
-        'GET', [$self->client->prefix, $self->name], $params
-    );
-
-    my $response = $self->client->send_request($request);
-
-    unless ($response->is_success) {
-        die "Error getting bucket properties: ".$response->status_line."\n";
-    }
-
-    if ($params->{keys} ne 'stream') {
-        return JSON::decode_json($response->content);
-    }
-
-    # In streaming mode, aggregate keys from the multiple returned chunk objects
-    else {
-        my $json = JSON->new;
-        my $props = $json->incr_parse($response->content);
-        if ($params->{cb}) {
-            while (defined(my $obj = $json->incr_parse)) {
-                $params->{cb}->($_) foreach @{$obj->{keys}};
-            }
-            return %$props ? { props => $props } : {};
-        }
-        else {
-            my @keys = map { $_->{keys} && ref $_->{keys} eq 'ARRAY' ? @{$_->{keys}} : () }
-                $json->incr_parse;
-            return { props => $props, keys => \@keys };
-        }
-    }
+    $self->client->get_properties($self->name, $params);
 }
 
 sub set_properties {
     my ($self, $props) = @_;
-
-    my $request = $self->client->new_request(
-        'PUT', [$self->client->prefix, $self->name]
-    );
-
-    $request->header('Content-Type' => $self->content_type);
-    $request->content(JSON::encode_json({props => $props}));
-
-    my $response = $self->client->send_request($request);
-    unless ($response->is_success) {
-        die "Error setting bucket properties: ".$response->status_line."\n";
-    }
+    $self->client->set_properties($self, $props);
 }
 
 sub new_object {

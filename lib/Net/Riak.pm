@@ -6,14 +6,15 @@ use Moose;
 
 use Net::Riak::Client;
 use Net::Riak::Bucket;
+use Net::Riak::Types Client => { -as => 'Client_T' };
 
 with 'Net::Riak::Role::MapReduce';
 
 has client => (
     is       => 'rw',
-    isa      => 'Net::Riak::Client',
+    isa      => Client_T,
     required => 1,
-    handles  => [qw/is_alive http_request http_response/]
+    handles  => [qw/is_alive/]
 );
 
 sub BUILDARGS {

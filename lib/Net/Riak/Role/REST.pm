@@ -3,14 +3,11 @@ package Net::Riak::Role::REST;
 # ABSTRACT: role for REST operations
 
 use URI;
-use HTTP::Request;
 use MIME::Base64;
 
 use Moose::Role;
-use Moose::Util::TypeConstraints;
-
-class_type 'HTTP::Request';
-class_type 'HTTP::Response';
+use Net::Riak::Types qw/HTTPResponse HTTPRequest/;
+with qw/Net::Riak::Role::REST::Bucket Net::Riak::Role::REST::Object/;
 
 has prefix => (
     is      => 'rw',
@@ -34,12 +31,12 @@ has client_id => (
 );
 has http_request => (
     is => 'rw',
-    isa => 'HTTP::Request',
+    isa => HTTPRequest,
 );
 
 has http_response => (
     is => 'rw',
-    isa => 'HTTP::Response',
+    isa => HTTPResponse,
     handles => ['is_success']
 );
 

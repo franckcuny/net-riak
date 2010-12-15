@@ -10,7 +10,14 @@ use Net::Riak::Link;
 
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
 with 'Net::Riak::Role::Base' => {classes =>
-      [{name => 'bucket', required => 1}, {name => 'client', required => 1}]};
+      [{name => 'bucket', required => 1}]};#, {name => 'client', required => 1}]};
+use Net::Riak::Types Client => {-as => 'Client_T'};
+has client => (
+    is       => 'rw',
+    isa      => Client_T,
+    required => 1,
+    handles  => [qw//],
+);
 
 has key => (is => 'rw', isa => 'Str', required => 1);
 has status       => (is => 'rw', isa => 'Int');
@@ -52,39 +59,30 @@ has siblings => (
     clearer => '_clear_siblings',
 );
 
+my @attributes =
+  qw/ links vtag content_encoding charset content_type value/;
+
+sub encode {
+    my $self = shift;
+    my $params;
+    # my $params = {
+    #     map { $_ => $self->$_ }
+    #     grep { $_ ne (qw/links usermeta value/) } @attributes
+    # };
+
+    # $params->{$_} = $self ->${ \"encode_$_" } for qw/links/;
+    $params->{value} = $self->data;
+    return $params;
+}
+
+
 sub store {
     my ($self, $w, $dw) = @_;
 
     $w  ||= $self->w;
     $dw ||= $self->dw;
 
-    my $params = {returnbody => 'true', w => $w, dw => $dw};
-
-    my $request =
-      $self->client->new_request('PUT',
-        [$self->client->prefix, $self->bucket->name, $self->key], $params);
-
-    $request->header('X-Riak-ClientID' => $self->client->client_id);
-    $request->header('Content-Type'    => $self->content_type);
-
-    if ($self->has_vclock) {
-        $request->header('X-Riak-Vclock' => $self->vclock);
-    }
-
-    if ($self->has_links) {
-        $request->header('link' => $self->_links_to_header);
-    }
-
-    if (ref $self->data && $self->content_type eq 'application/json') {
-        $request->content(JSON::encode_json($self->data));
-    }
-    else {
-        $request->content($self->data);
-    }
-
-    my $response = $self->client->send_request($request);
-    $self->populate($response, [200, 204, 300]);
-    $self;
+    $self->client->store_object($w, $dw, $self);
 }
 
 sub _links_to_header {
@@ -97,13 +95,7 @@ sub load {
 
     my $params = {r => $self->r};
 
-    my $request =
-      $self->client->new_request('GET',
-        [$self->client->prefix, $self->bucket->name, $self->key], $params);
-
-    my $response = $self->client->send_request($request);
-    $self->populate($response, [200, 300, 404]);
-    $self;
+    $self->client->load_object($params, $self);
 }
 
 sub delete {
@@ -112,13 +104,7 @@ sub delete {
     $dw ||= $self->bucket->dw;
     my $params = {dw => $dw};
 
-    my $request =
-      $self->client->new_request('DELETE',
-        [$self->client->prefix, $self->bucket->name, $self->key], $params);
-
-    my $response = $self->client->send_request($request);
-    $self->populate($response, [204, 404]);
-    $self;
+    $self->client->delete_object($params, $self);
 }
 
 sub clear {
