@@ -12,7 +12,7 @@ with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
 with 'Net::Riak::Role::Base' => {classes =>
       [{name => 'bucket', required => 1}, {name => 'client', required => 1}]};
 
-has key => (is => 'rw', isa => 'Str', required => 1);
+has key => (is => 'rw', isa => 'Str', required => 0);
 has status       => (is => 'rw', isa => 'Int');
 has exists       => (is => 'rw', isa => 'Bool', default => 0,);
 has data         => (is => 'rw', isa => 'Any', clearer => '_clear_data');
@@ -59,10 +59,14 @@ sub store {
     $dw ||= $self->dw;
 
     my $params = {returnbody => 'true', w => $w, dw => $dw};
+    my $path   = [$self->client->prefix, $self->bucket->name];
+    my $method = 'POST';
+    if (defined $self->key) {
+      push @$path, $self->key;
+      $method = 'PUT';
+    } 
 
-    my $request =
-      $self->client->new_request('PUT',
-        [$self->client->prefix, $self->bucket->name, $self->key], $params);
+    my $request = $self->client->new_request($method, $path, $params);
 
     $request->header('X-Riak-ClientID' => $self->client->client_id);
     $request->header('Content-Type'    => $self->content_type);
@@ -83,7 +87,7 @@ sub store {
     }
 
     my $response = $self->client->send_request($request);
-    $self->populate($response, [200, 204, 300]);
+    $self->populate($response, [200, 201, 204, 300]);
     $self;
 }
 
@@ -164,8 +168,15 @@ sub populate {
         shift @siblings;
         $self->siblings(\@siblings);
     }
+    
+    if ($status == 201) {
+        my $location = $http_response->header('location');
+        my ($key)    = ($location =~ m!/([^/]+)$!);
+        $self->key($key);
+    } 
+    
 
-    if ($status == 200) {
+    if ($status == 200 || $status == 201) {
         $self->content_type($http_response->content_type)
             if $http_response->content_type;
         $self->data(JSON::decode_json($self->data))
