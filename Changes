@@ -1,3 +1,6 @@
+0.13 (UNRELEASED)
+	- Automatic key generation support (Simon Wistow)
+
 0.12
     - fix _build_link method (reported by gphat)
     - added useragent timeout parameter (Robin Edwards)
