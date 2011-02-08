@@ -4,6 +4,11 @@ package Net::Riak::Role::UserAgent;
 
 use Moose::Role;
 use LWP::UserAgent;
+use LWP::ConnCache;
+
+our $CONN_CACHE;
+
+sub connection_cache { $CONN_CACHE ||= LWP::ConnCache->new }
 
 has useragent => (
     is      => 'rw',
@@ -21,6 +26,9 @@ has useragent => (
         my $ua = LWP::UserAgent->new(
             timeout => $self->ua_timeout
         );
+
+        $ua->conn_cache(__PACKAGE__->connection_cache);
+
         $ua;
     }
 );
