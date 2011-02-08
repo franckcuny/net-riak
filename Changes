@@ -1,4 +1,6 @@
 0.13 (UNRELEASED)
+	- Enviroment variable for riak when running tests (Robin Edwards)
+	- Connection caching (Andrew Sayers)
 	- Automatic key generation support (Simon Wistow)
 
 0.12
