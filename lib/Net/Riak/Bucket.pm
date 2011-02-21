@@ -1,30 +1,14 @@
 package Net::Riak::Bucket;
-
-# ABSTRACT: Access and change information about a Riak bucket
-
-use JSON;
 use Moose;
 use Carp;
-
 use Net::Riak::Object;
 use Net::Riak::Types Client => {-as => 'Client_T'};
-
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
-# with 'Net::Riak::Role::Base' => {
-#     classes => [{ name => 'client', required => 1, }]
-# };
 
 has client => (
     is       => 'rw',
     isa      => Client_T,
     required => 1,
-    # handles  => [
-    #     qw(
-    #       get_keys
-    #       get_properties
-    #       set_properties
-    #       )
-    # ],
 );
 
 has name => (
@@ -62,11 +46,7 @@ sub allow_multiples {
 
 sub get_keys {
     my ($self, $params) = @_;
-    $self->client->get_keys($self->name);
-    # my $key_mode = delete($params->{stream}) ? 'stream' : 'true';
-    # $params = { props => 'false', keys => $key_mode, %$params };
-    # my $properties = $self->get_properties($params);
-    # return $properties->{keys};
+    $self->client->get_keys($self->name, $params);
 }
 
 sub get {

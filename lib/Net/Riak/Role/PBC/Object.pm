@@ -24,8 +24,9 @@ sub load_object {
             r      => $params->{r},
         }
     );
-    # XXX build object
-    1;
+
+    $object->populate($resp);
+    $object;
 }
 
 sub delete_object {

@@ -31,10 +31,10 @@ sub get_keys {
         }
     );
 
-    use YAML::Syck;
-    warn Dump $res;
     return @$keys;
 }
+
+
 
 1;
 
