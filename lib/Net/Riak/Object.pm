@@ -3,7 +3,6 @@ package Net::Riak::Object;
 # ABSTRACT: holds meta information about a Riak object
 
 use Carp;
-use JSON;
 use Moose;
 use Scalar::Util;
 use Net::Riak::Link;
@@ -19,13 +18,12 @@ has client => (
     handles  => [qw//],
 );
 
-has key => (is => 'rw', isa => 'Str', required => 1);
+has key => (is => 'rw', isa => 'Str', required => 0);
 has status       => (is => 'rw', isa => 'Int');
 has exists       => (is => 'rw', isa => 'Bool', default => 0,);
 has data         => (is => 'rw', isa => 'Any', clearer => '_clear_data');
 has vclock       => (is => 'rw', isa => 'Str', predicate => 'has_vclock',);
 has content_type => (is => 'rw', isa => 'Str', default => 'application/json');
-has _headers     => (is => 'rw', isa => 'HTTP::Response',);
 has _jsonize     => (is => 'rw', isa => 'Bool', lazy => 1, default => 1,);
 has links => (
     traits     => ['Array'],
@@ -116,48 +114,7 @@ sub clear {
 }
 
 sub populate {
-    my ($self, $http_response, $expected) = @_;
-
-    $self->clear;
-
-    return if (!$http_response);
-
-    my $status = $http_response->code;
-    $self->_headers($http_response);
-    $self->status($status);
-
-    $self->data($http_response->content);
-
-    if (!grep { $status == $_ } @$expected) {
-        confess "Expected status "
-          . (join(', ', @$expected))
-          . ", received $status"
-    }
-
-    if ($status == 404) {
-        $self->clear;
-        return;
-    }
-
-    $self->exists(1);
-
-    if ($http_response->header('link')) {
-        $self->_populate_links($http_response->header('link'));
-    }
-
-    if ($status == 300) {
-        my @siblings = split("\n", $self->data);
-        shift @siblings;
-        $self->siblings(\@siblings);
-    }
-
-    if ($status == 200) {
-        $self->content_type($http_response->content_type)
-            if $http_response->content_type;
-        $self->data(JSON::decode_json($self->data))
-            if $self->content_type eq 'application/json';
-        $self->vclock($http_response->header('X-Riak-Vclock'));
-    }
+    shift->client->populate(@_);
 }
 
 sub _populate_links {
