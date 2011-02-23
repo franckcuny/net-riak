@@ -2,7 +2,6 @@ package Net::Riak::Role::REST::Object;
 
 use Moose::Role;
 use JSON;
-has _headers     => (is => 'rw', isa => 'HTTP::Response',);
 
 sub store_object {
     my ($self, $w, $dw, $object) = @_;
@@ -32,7 +31,7 @@ sub store_object {
     }
 
     my $response = $self->send_request($request);
-    $object->populate($response, [200, 201, 204, 300]);
+    $self->populate_object($object, $response, [200, 201, 204, 300]);
     return $object;
 }
 
@@ -44,7 +43,7 @@ sub load_object {
         [ $self->prefix, $object->bucket->name, $object->key ], $params );
 
     my $response = $self->send_request($request);
-    $object->populate( $response, [ 200, 300, 404 ] );
+    $self->populate_object($object, $response, [ 200, 300, 404 ] );
     $object;
 }
 
@@ -56,22 +55,20 @@ sub delete_object {
         [ $self->prefix, $object->bucket->name, $object->key ], $params );
 
     my $response = $self->send_request($request);
-    $object->populate( $response, [ 204, 404 ] );
+    $self->populate_object($object, $response, [ 204, 404 ] );
     $object;
 }
 
-sub populate {
-    my ($self, $http_response, $expected) = @_;
+sub populate_object {
+    my ($self, $obj, $http_response, $expected) = @_;
 
-    $self->clear;
+    $obj->clear;
 
     return if (!$http_response);
 
     my $status = $http_response->code;
-    $self->_headers($http_response);
-    $self->status($status);
 
-    $self->data($http_response->content);
+    $obj->data($http_response->content);
 
     if (!grep { $status == $_ } @$expected) {
         confess "Expected status "
@@ -80,35 +77,42 @@ sub populate {
     }
 
     if ($status == 404) {
-        $self->clear;
+        $obj->clear;
         return;
     }
 
-    $self->exists(1);
+    $obj->exists(1);
 
     if ($http_response->header('link')) {
-        $self->_populate_links($http_response->header('link'));
+        $obj->_populate_links($http_response->header('link'));
     }
 
     if ($status == 300) {
-        my @siblings = split("\n", $self->data);
+        my @siblings = split("\n", $obj->data);
         shift @siblings;
-        $self->siblings(\@siblings);
+        $obj->siblings(\@siblings);
     }
     
     if ($status == 201) {
         my $location = $http_response->header('location');
         my ($key)    = ($location =~ m!/([^/]+)$!);
-        $self->key($key);
+        $obj->key($key);
     } 
     
 
     if ($status == 200 || $status == 201) {
-        $self->content_type($http_response->content_type)
+        $obj->content_type($http_response->content_type)
             if $http_response->content_type;
-        $self->data(JSON::decode_json($self->data))
-            if $self->content_type eq 'application/json';
-        $self->vclock($http_response->header('X-Riak-Vclock'));
+        $obj->data(JSON::decode_json($obj->data))
+            if $obj->content_type eq 'application/json';
+        $obj->vclock($http_response->header('X-Riak-Vclock'));
     }
 }
+
 1;
+__END__
+
+=item populate_object
+
+Given the output of RiakUtils.http_request and a list of statuses, populate the object. Only for use by the Riak client library.
+

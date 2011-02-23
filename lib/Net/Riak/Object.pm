@@ -15,16 +15,13 @@ has client => (
     is       => 'rw',
     isa      => Client_T,
     required => 1,
-    handles  => [qw//],
 );
-
 has key => (is => 'rw', isa => 'Str', required => 0);
-has status       => (is => 'rw', isa => 'Int');
 has exists       => (is => 'rw', isa => 'Bool', default => 0,);
 has data         => (is => 'rw', isa => 'Any', clearer => '_clear_data');
-has vclock       => (is => 'rw', isa => 'Str', predicate => 'has_vclock',);
+has vclock       => (is => 'rw', isa => 'Str', predicate => 'has_vclock');
 has content_type => (is => 'rw', isa => 'Str', default => 'application/json');
-has _jsonize     => (is => 'rw', isa => 'Bool', lazy => 1, default => 1,);
+has _jsonize     => (is => 'rw', isa => 'Bool', lazy => 1, default => 1);
 has links => (
     traits     => ['Array'],
     is         => 'rw',
@@ -83,6 +80,12 @@ sub store {
     $self->client->store_object($w, $dw, $self);
 }
 
+sub status {
+    my ($self) = @_;
+    warn "Called deprecated status method. Please call \$object->client->status";
+    $self->client->status;
+}   
+
 sub _links_to_header {
     my $self = shift;
     join(', ', map { $_->to_link_header($self->client) } $self->links);
@@ -111,10 +114,6 @@ sub clear {
     $self->_clear_links;
     $self->exists(0);
     $self;
-}
-
-sub populate {
-    shift->client->populate(@_);
 }
 
 sub _populate_links {
@@ -158,7 +157,7 @@ sub sibling {
         key    => $self->key
     );
     $obj->_jsonize($self->_jsonize);
-    $obj->populate($response, [200]);
+    $self->client->populate_object($obj, $response, [200]);
     $obj;
 }
 
@@ -260,10 +259,6 @@ Get or set the data stored in this object.
 =item B<dw>
 
 =item B<content_type>
-
-=item B<status>
-
-Get the HTTP status from the last operation on this object.
 
 =item B<links>
 
@@ -369,7 +364,7 @@ Return true if this object has siblings
 
 Return true if this object has no siblings
 
-=item populate
+=item populate_object
 
 Given the output of RiakUtils.http_request and a list of statuses, populate the object. Only for use by the Riak client library.
 

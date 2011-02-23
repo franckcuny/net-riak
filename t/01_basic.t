@@ -3,7 +3,6 @@ use warnings;
 use Test::More;
 use Net::Riak;
 use YAML::Syck;
-use Time::HiRes qw/time/;
 
 BEGIN {
   unless ($ENV{RIAK_REST_HOST}) {
@@ -29,7 +28,7 @@ my $bucket_multi = 'multiBucket2';
     ok my $obj = $bucket->new_object('foo', $content),
       'created a new riak object';
     ok $obj->store,       'store object foo';
-    is $obj->status,      200, 'valid status';
+    is $obj->client->status,      200, 'valid status';
     is $obj->key,         'foo', 'valid key';
     is_deeply $obj->data, $content, 'valid content';
 }
@@ -53,7 +52,7 @@ my $bucket_multi = 'multiBucket2';
     ok $obj->exists, 'object exists';
     $obj->delete;
     $obj->load;
-    ok !$obj->exists, "object '$key' doesn't exists anymore";
+    ok !$obj->exists, "object don't exists anymore";
 }
 
 # test set bucket properties
@@ -112,36 +111,15 @@ my $bucket_multi = 'multiBucket2';
     is_deeply $result, [[2]], 'got valid result';
 }
 
-# test siblings
-{
-     my $client = Net::Riak->new();
-     my $bucket = $client->bucket($bucket_multi);
-     $bucket->allow_multiples(1);
-     ok $bucket->allow_multiples, 'multiples set to 1';
-     my $obj = $bucket->get('foo');
-     $obj->delete;
-     for(1..5) {
-         my $client = Net::Riak->new();
-         my $bucket = $client->bucket($bucket_multi);
-         $obj = $bucket->new_object('foo', [int(rand(100))]);
-         $obj->store;
-     }
-     # check we got 5 siblings
-     ok $obj->has_siblings, 'object has siblings';
-     $obj = $bucket->get('foo');
-     my $siblings_count = $obj->get_siblings;
-     is $siblings_count, 5, 'got 5 siblings';
-     # test set/get
-     my @siblings = $obj->siblings;
-     my $obj3 = $obj->sibling(3);
-     is_deeply $obj3->data, $obj->sibling(3)->data;
-     $obj3 = $obj->sibling(3);
-     $obj3->store;
-     $obj->load;
-     is_deeply $obj->data, $obj3->data;
-     $obj->delete;
-}
-
+# XXX javascript named map
+# {
+#     my $client     = Net::Riak->new();
+#     my $bucket     = $client->bucket($bucket_name);
+#     my $obj        = $bucket->new_object('foo', [2])->store;
+#     my $result = $client->add("bucket", "foo")->map("Riak.mapValuesJson")->run;
+#     use YAML; warn Dump $result;
+#     is_deeply $result, [[2]], 'got valid result';
+# }
 
 # javascript source map reduce
 {

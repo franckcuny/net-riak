@@ -37,13 +37,10 @@ has http_request => (
 has http_response => (
     is => 'rw',
     isa => HTTPResponse,
-    handles => ['is_success']
-);
-
-has ua_timeout => (
-    is  => 'rw',
-    isa => 'Int',
-    default => 3
+    handles => {
+        is_success => 'is_success',
+        status => 'code',
+    }
 );
 
 sub _build_path {
@@ -73,6 +70,7 @@ sub send_request {
 
     $self->http_request($req);
     my $r = $self->useragent->request($req);
+
     $self->http_response($r);
 
     return $r;

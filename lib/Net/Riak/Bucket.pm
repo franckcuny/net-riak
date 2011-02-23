@@ -36,7 +36,7 @@ sub allow_multiples {
     my $self = shift;
 
     if (my $val = shift) {
-        my $bool = ($val == 1 ? JSON::true : JSON::false);
+        my $bool = ($val == 1 ? 1 : 0);
         $self->set_property('allow_mult', $bool);
     }
     else {
