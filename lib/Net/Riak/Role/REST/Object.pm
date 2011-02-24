@@ -20,7 +20,7 @@ sub store_object {
     }
 
     if ($object->has_links) {
-        $request->header('link' => $object->_links_to_header);
+        $request->header('link' => $self->_links_to_header($object));
     }
 
     if (ref $object->data && $object->content_type eq 'application/json') {
@@ -107,6 +107,12 @@ sub populate_object {
             if $obj->content_type eq 'application/json';
         $obj->vclock($http_response->header('X-Riak-Vclock'));
     }
+}
+
+
+sub _links_to_header {
+    my ($self, $object) = @_;
+    join(', ', map { $_->to_link_header($self->client) } $object->links);
 }
 
 1;
