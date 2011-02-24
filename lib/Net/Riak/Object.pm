@@ -20,6 +20,7 @@ has key => (is => 'rw', isa => 'Str', required => 0);
 has exists       => (is => 'rw', isa => 'Bool', default => 0,);
 has data         => (is => 'rw', isa => 'Any', clearer => '_clear_data');
 has vclock       => (is => 'rw', isa => 'Str', predicate => 'has_vclock');
+has vtag          => (is => 'rw', isa => 'Str');
 has content_type => (is => 'rw', isa => 'Str', default => 'application/json');
 has _jsonize     => (is => 'rw', isa => 'Bool', lazy => 1, default => 1);
 has links => (

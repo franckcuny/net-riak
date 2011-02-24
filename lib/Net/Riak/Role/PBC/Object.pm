@@ -10,6 +10,7 @@ sub store_object {
             ? JSON::encode_json($object->data) : $object->data;
 
     my $content = {
+        content_type => $object->content_type,
         value => $value,
         links => undef,
         usermeta => undef
@@ -30,14 +31,14 @@ sub load_object {
 
     my $resp = $self->send_message(
         GetReq => {
-            bucket => $object->bucket,
+            bucket => $object->bucket->name,
             key    => $object->key,
             r      => $params->{r},
         }
     );
 
-    $object->populate($resp);
-    $object;
+    $self->populate_object($object, $resp);
+    return $object;
 }
 
 sub delete_object {
@@ -50,6 +51,23 @@ sub delete_object {
             rw     => $params->{w},
         }
     );
+}
+
+sub populate_object {
+    my ( $self, $object, $resp) = @_;
+    
+    my $content = $resp->content->[0];
+
+    return unless $content and $resp->vclock;
+
+    $object->vclock($resp->vclock);
+    $object->vtag($content->vtag);
+    $object->content_type($content->content_type);
+
+    my $data = ($object->content_type eq 'application/json') 
+        ? JSON::decode_json($content->value) : $content->value;
+
+    $object->data($data);
 }
 
 1;

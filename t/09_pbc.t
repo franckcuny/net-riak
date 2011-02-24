@@ -48,4 +48,9 @@ $bucket->new_object( "bob" => { 'name' => 'bob', age => 23 } )->store;
 # list keys
 is scalar( $bucket->get_keys ), 1, 'returns key';
 
+my $obj = $bucket->get('bob');
+isa_ok $obj, 'Net::Riak::Object'; 
+is $obj->data->{name}, 'bob', 'retrieved object';
+is $obj->data->{age}, 23, 'retrieved object';
+
 done_testing();
