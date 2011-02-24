@@ -3,32 +3,11 @@ package Net::Riak::Role::REST;
 # ABSTRACT: role for REST operations
 
 use URI;
-use MIME::Base64;
 
 use Moose::Role;
 use Net::Riak::Types qw/HTTPResponse HTTPRequest/;
 with qw/Net::Riak::Role::REST::Bucket Net::Riak::Role::REST::Object/;
 
-has prefix => (
-    is      => 'rw',
-    isa     => 'Str',
-    default => 'riak'
-);
-has mapred_prefix => (
-    is      => 'rw',
-    isa     => 'Str',
-    default => 'mapred'
-);
-has [qw/r w dw/] => (
-    is      => 'rw',
-    isa     => 'Int',
-    default => 2
-);
-has client_id => (
-    is         => 'rw',
-    isa        => 'Str',
-    lazy_build => 1,
-);
 has http_request => (
     is => 'rw',
     isa => HTTPRequest,
@@ -74,10 +53,6 @@ sub send_request {
     $self->http_response($r);
 
     return $r;
-}
-
-sub _build_client_id {
-    "perl_net_riak" . encode_base64(int(rand(10737411824)), '');
 }
 
 sub is_alive {
