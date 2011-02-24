@@ -60,4 +60,14 @@ sub set_properties {
     }
 }
 
+sub get_keys {
+    my ($self, $bucket, $params) = @_;
+
+    my $key_mode = delete($params->{stream}) ? 'stream' : 'true';
+    $params = { props => 'false', keys => $key_mode, %$params };
+    my $properties = $self->get_properties($bucket, $params);
+
+    return $properties->{keys};
+}
+
 1;
