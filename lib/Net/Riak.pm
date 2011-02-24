@@ -14,7 +14,7 @@ has client => (
     is       => 'rw',
     isa      => Client_T,
     required => 1,
-    handles  => [qw/is_alive/]
+    handles  => [qw/is_alive all_buckets/]
 );
 
 sub BUILDARGS {
@@ -142,6 +142,10 @@ Get the bucket by the specified name. Since buckets always exist, this will alwa
     }
 
 Check if the Riak server for this client is alive
+
+=head2 all_buckets
+
+List all buckets, requires PBC connection
 
 =head2 add
 

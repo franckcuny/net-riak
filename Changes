@@ -1,4 +1,9 @@
-0.13 (UNRELEASED)
+next release
+    - list_buckets (Robin Edwards)
+    - limited PBC support (Robin Edwards)
+    - disable_return_body flag (Robin Edwards)
+
+0.13
 	- Enviroment variable for riak when running tests (Robin Edwards)
 	- Connection caching (Andrew Sayers)
 	- Automatic key generation support (Simon Wistow)
