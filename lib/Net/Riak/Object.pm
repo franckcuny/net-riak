@@ -54,23 +54,6 @@ has siblings => (
     clearer => '_clear_siblings',
 );
 
-my @attributes =
-  qw/ links vtag content_encoding charset content_type value/;
-
-sub encode {
-    my $self = shift;
-    my $params;
-    # my $params = {
-    #     map { $_ => $self->$_ }
-    #     grep { $_ ne (qw/links usermeta value/) } @attributes
-    # };
-
-    # $params->{$_} = $self ->${ \"encode_$_" } for qw/links/;
-    $params->{value} = $self->data;
-    return $params;
-}
-
-
 sub store {
     my ($self, $w, $dw) = @_;
 
