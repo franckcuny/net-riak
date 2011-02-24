@@ -84,7 +84,7 @@ sub send {
     $cb->($resp);
     while (!$resp->done) {
         $resp = $self->handle_response;
-        use YAML::Syck; warn Dump $resp;
+#        use YAML::Syck; warn Dump $resp;
         $cb->($resp);
     }
     return 1;

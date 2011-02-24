@@ -1,6 +1,7 @@
 package Net::Riak::Role::PBC;
 
 use Moose::Role;
+use MooseX::Types::Moose qw/Str Int/;
 
 with qw(
   Net::Riak::Role::PBC::Message
@@ -12,8 +13,20 @@ use IO::Socket::INET;
 
 has [qw/r w dw/] => (
     is      => 'rw',
-    isa     => 'Int',
+    isa     => Int,
     default => 2
+);
+
+has host => (
+    is  => 'ro',
+    isa => Str,
+    required => 1,
+);
+
+has port => (
+    is  => 'ro',
+    isa => Int,
+    required => 1,
 );
 
 has socket => (
@@ -38,13 +51,12 @@ sub connect {
 
     $self->socket(
         IO::Socket::INET->new(
-            PeerAddr => 'localhost',
-            PeerPort => '8087',
+            PeerAddr => $self->host,
+            PeerPort => $self->port,
             Proto    => 'tcp',
             Timeout  => 30,
         )
     );
 }
 
-1;
-    
+1; 

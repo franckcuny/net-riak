@@ -4,12 +4,19 @@ use warnings;
 use Test::More;
 use Net::Riak;
 
-plan tests => 6;
+BEGIN {
+  unless ($ENV{RIAK_PBC_HOST}) {
+    require Test::More;
+    Test::More::plan(skip_all => 'RIAK_REST_HOST not set.. skipping');
+  }
+}
+
+my ($host, $port) = split ':', $ENV{RIAK_PBC_HOST};
 
 my $client = Net::Riak->new(
     transport => 'PBC',
-    hostname  => 'localhost',
-    port      => '8087',
+    host  => $host,
+    port  => $port,
 );
 
 ok $client->is_alive;
@@ -36,9 +43,9 @@ $bucket->n_val(3);
 $prop = $bucket->get_properties;
 is $prop->{n_val}, 3, 'got property n_val';
 
-for ( 1 .. 300 ) {
-    $bucket->new_object( "bob$_" => { 'name' => 'bob', age => 23 } )->store;
-}
+$bucket->new_object( "bob" => { 'name' => 'bob', age => 23 } )->store;
 
 # list keys
-is scalar( $bucket->get_keys ), 300, 'returns 300 keys';
+is scalar( $bucket->get_keys ), 1, 'returns key';
+
+done_testing();

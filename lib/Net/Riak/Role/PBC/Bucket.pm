@@ -5,14 +5,15 @@ use Moose::Role;
 sub get_properties {
     my ( $self, $name, $params ) = @_;
     my $resp = $self->send_message( GetBucketReq => { bucket => $name } );
+
     return { %{ $resp->props } };
 }
 
 sub set_properties {
-    my ( $self, $name, $props ) = @_;
+    my ( $self, $bucket, $props ) = @_;
     return $self->send_message(
         SetBucketReq => {
-            bucket => $name,
+            bucket => $bucket->name,
             props  => $props
         }
     );
