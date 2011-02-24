@@ -8,6 +8,9 @@ sub store_object {
 
     my $params = {returnbody => 'true', w => $w, dw => $dw};
 
+    $params->{returnbody} = 'false'
+        if $self->disable_return_body;
+
     my $request =
       $self->new_request('PUT',
         [$self->prefix, $object->bucket->name, $object->key], $params);
@@ -62,13 +65,15 @@ sub delete_object {
 sub populate_object {
     my ($self, $obj, $http_response, $expected) = @_;
 
-    $obj->clear;
+    $obj->_clear_links;
+    $obj->exists(0);
 
     return if (!$http_response);
 
     my $status = $http_response->code;
 
-    $obj->data($http_response->content);
+    $obj->data($http_response->content)
+        unless $self->disable_return_body;
 
     if (!grep { $status == $_ } @$expected) {
         confess "Expected status "
@@ -112,7 +117,7 @@ sub populate_object {
 
 sub _links_to_header {
     my ($self, $object) = @_;
-    join(', ', map { $_->to_link_header($self->client) } $object->links);
+    join(', ', map { $_->to_link_header($self) } $object->links);
 }
 
 1;

@@ -5,6 +5,7 @@ package Net::Riak::Role::REST;
 use URI;
 
 use Moose::Role;
+use MooseX::Types::Moose 'Bool';
 use Net::Riak::Types qw/HTTPResponse HTTPRequest/;
 with qw/Net::Riak::Role::REST::Bucket Net::Riak::Role::REST::Object/;
 
@@ -20,6 +21,12 @@ has http_response => (
         is_success => 'is_success',
         status => 'code',
     }
+);
+
+has disable_return_body => (
+    is => 'rw',
+    isa => Bool,
+    default => 0
 );
 
 sub _build_path {

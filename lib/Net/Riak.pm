@@ -40,7 +40,8 @@ sub bucket {
 
     my $client = Net::Riak->new(
         host => 'http://10.0.0.40:8098', 
-        ua_timeout => 900
+        ua_timeout => 900,
+        disable_return_body => 1
     );
 
     my $bucket = $client->bucket('blog');
@@ -87,6 +88,7 @@ URL of the node (default 'http://127.0.0.1:8098'). If your ring is composed with
 
 Now, when a request is made, a node is picked at random, according to weight.
 
+
 =item B<prefix>
 
 Interface prefix (default 'riak')
@@ -116,6 +118,14 @@ client_id for this client
 =item B<ua_timeout>
 
 timeout for L<LWP::UserAgent> in seconds, defaults to 3.
+
+=item B<disable_return_body>
+
+disable returning of object content on store operation.
+
+NOTE: if the object has siblings these will not be available without an additional fetch
+
+=back
 
 =head1 METHODS
 
