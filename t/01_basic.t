@@ -2,103 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use Net::Riak;
-use YAML::Syck;
-
-BEGIN {
-  unless ($ENV{RIAK_REST_HOST}) {
-    require Test::More;
-    Test::More::plan(skip_all => 'RIAK_REST_HOST not set.. skipping');
-  }
-}
-
-my $bucket_name = 'RIAK_TEST_'.time;
-my $bucket_multi = 'multiBucket2';
-
-# is alive
-{
-    ok my $client = Net::Riak->new(host => $ENV{RIAK_REST_HOST}), 'client created';
-    ok $client->is_alive, 'riak is alive';
-}
-
-# store and get
-{
-    ok my $client = Net::Riak->new(host => $ENV{RIAK_REST_HOST}), 'client created';
-    ok my $bucket = $client->bucket($bucket_name), 'got bucket test';
-    my $content = [int(rand(100))];
-    ok my $obj = $bucket->new_object('foo', $content),
-      'created a new riak object';
-    ok $obj->store,       'store object foo';
-    is $obj->client->status,      200, 'valid status';
-    is $obj->key,         'foo', 'valid key';
-    is_deeply $obj->data, $content, 'valid content';
-}
-
-# missing object
-{
-    my $client = Net::Riak->new(host => $ENV{RIAK_REST_HOST});
-    my $bucket = $client->bucket($bucket_name);
-    my $obj    = $bucket->get("missing");
-    ok !$obj->data, 'no data';
-}
-
-# delete object
-{
-    my $client  = Net::Riak->new(host => $ENV{RIAK_REST_HOST});
-    my $bucket  = $client->bucket($bucket_name);
-    my $content = [int(rand(100))];
-    my $obj     = $bucket->new_object('foo', $content);
-    ok $obj->store, 'object is stored';
-    $obj = $bucket->get('foo');
-    ok $obj->exists, 'object exists';
-    $obj->delete;
-    $obj->load;
-    ok !$obj->exists, "object don't exists anymore";
-}
-
-# test set bucket properties
-{
-    my $client = Net::Riak->new(host => $ENV{RIAK_REST_HOST});
-    my $bucket = $client->bucket($bucket_name);
-    $bucket->allow_multiples(1);
-    my $props = $bucket->get_properties;
-    my $res = $bucket->allow_multiples;
-    $bucket->n_val(3);
-    is $bucket->n_val, 3, 'n_val is set to 3';
-    $bucket->set_properties({allow_mult => 0, "n_val" => 2});
-    $res = $bucket->allow_multiples;
-    ok !$bucket->allow_multiples, "don't allow multiple anymore";
-    is $bucket->n_val, 2, 'n_val is set to 2';
-}
-
-# test siblings
-{
-    my $client = Net::Riak->new(host => $ENV{RIAK_REST_HOST});
-    my $bucket = $client->bucket($bucket_multi);
-    $bucket->allow_multiples(1);
-    ok $bucket->allow_multiples, 'multiples set to 1';
-    my $obj = $bucket->get('foo');
-    $obj->delete;
-    for(1..5) {
-        my $client = Net::Riak->new(host => $ENV{RIAK_REST_HOST});
-        my $bucket = $client->bucket($bucket_multi);
-        $obj = $bucket->new_object('foo', [int(rand(100))]);
-        $obj->store;
-    }
-    # check we got 5 siblings
-    ok $obj->has_siblings, 'object has siblings';
-    $obj = $bucket->get('foo');
-    my $siblings_count = $obj->get_siblings;
-    is $siblings_count, 5, 'got 5 siblings';
-    # test set/get
-    my @siblings = $obj->siblings;
-    my $obj3 = $obj->sibling(3);
-    is_deeply $obj3->data, $obj->sibling(3)->data;
-    $obj3 = $obj->sibling(3);
-    $obj3->store;
-    $obj->load;
-    is_deeply $obj->data, $obj3->data;
-    $obj->delete;
-}
 
 # test js source map
 {
@@ -117,7 +20,6 @@ my $bucket_multi = 'multiBucket2';
 #     my $bucket     = $client->bucket($bucket_name);
 #     my $obj        = $bucket->new_object('foo', [2])->store;
 #     my $result = $client->add("bucket", "foo")->map("Riak.mapValuesJson")->run;
-#     use YAML; warn Dump $result;
 #     is_deeply $result, [[2]], 'got valid result';
 # }
 
