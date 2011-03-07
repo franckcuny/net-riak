@@ -8,7 +8,9 @@ use Moose::Role;
 use MooseX::Types::Moose 'Bool';
 use Net::Riak::Types qw/HTTPResponse HTTPRequest/;
 use Data::Dump 'pp';
-with qw/Net::Riak::Role::REST::Bucket Net::Riak::Role::REST::Object/;
+with qw/Net::Riak::Role::REST::Bucket 
+    Net::Riak::Role::REST::Object 
+    Net::Riak::Role::REST::Link/;
 
 has http_request => (
     is => 'rw',

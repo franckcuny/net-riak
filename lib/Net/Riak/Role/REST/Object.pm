@@ -136,34 +136,8 @@ sub retrieve_sibling {
     $sibling;
 }
 
-sub _populate_links {
-    my ($self, $object, $links) = @_;
-
-    for my $link (split(',', $links)) {
-        if ($link
-            =~ /\<\/([^\/]+)\/([^\/]+)\/([^\/]+)\>; ?riaktag=\"([^\']+)\"/)
-        {
-            my $bucket = $2;
-            my $key    = $3;
-            my $tag    = $4;
-            my $l      = Net::Riak::Link->new(
-                bucket => Net::Riak::Bucket->new(
-                    name   => $bucket,
-                    client => $self
-                ),
-                key => $key,
-                tag => $tag
-            );
-            $object->add_link($l);
-        }
-    }
-}
 
 
-sub _links_to_header {
-    my ($self, $object) = @_;
-    join(', ', map { $_->to_link_header($self) } $object->links);
-}
 
 1;
 __END__

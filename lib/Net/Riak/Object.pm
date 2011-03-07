@@ -70,11 +70,6 @@ sub status {
     $self->client->status;
 }   
 
-sub _links_to_header {
-    my $self = shift;
-    join(', ', map { $_->to_link_header($self->client) } $self->links);
-}
-
 sub load {
     my $self = shift;
 
@@ -139,8 +134,11 @@ sub add_link {
 }
 
 sub remove_link {
-    my ($self, $link) = @_;
-    # XXX purge links!
+   my ($self, $link) = @_;
+   my @links = grep { $_->key ne $link->key } @{$self->links};
+   $self->_clear_links;
+   $self->append_link($_) for @links;
+   $self;
 }
 
 sub add {

@@ -6,6 +6,7 @@ use MooseX::Types::Moose qw/Str Int/;
 with qw(
   Net::Riak::Role::PBC::Message
   Net::Riak::Role::PBC::Bucket
+  Net::Riak::Role::PBC::Link
   Net::Riak::Role::PBC::Object);
 
 use Net::Riak::Types 'Socket';
