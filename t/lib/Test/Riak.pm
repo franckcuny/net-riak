@@ -7,6 +7,7 @@ use_ok 'Net::Riak';
 sub import {
     no strict 'refs';
     *{caller()."::test_riak"} = \&{"Test::Riak::test_riak"};
+    *{caller()."::new_riak_client"} = \&{"Test::Riak::new_riak_client"};
     strict->import;
     warnings->import;
     use Test::More;
@@ -44,6 +45,20 @@ sub test_riak (&) {
     else {
         diag "Skipping RIAK_REST_HOST not set";
     }
+}
+
+sub new_riak_client {
+    if ($ENV{RIAK_PBC_HOST}) {
+        my ($host, $port) = split ':', $ENV{RIAK_PBC_HOST};
+
+        return  Net::Riak->new(
+            transport => 'PBC',
+            host  => $host,
+            port  => $port,
+        );
+    }
+    
+    return  Net::Riak->new(host => $ENV{RIAK_REST_HOST});
 }
 
 sub run_test_case {

@@ -13,7 +13,7 @@ test_riak {
     $obj->delete;
    
     for(1..5) {
-        my $client = Net::Riak->new(host => $ENV{RIAK_REST_HOST});
+        my $client = new_riak_client();
         my $bucket = $client->bucket($bucket_name);
         $obj = $bucket->new_object('foo', [int(rand(100))]);
         $obj->store;
