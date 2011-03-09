@@ -56,7 +56,7 @@ sub delete_object {
 sub populate_object {
     my ( $self, $object, $resp) = @_;
     
-    my $content = $resp->content->[0];
+    my $content = $resp->content ? $resp->content->[0] : undef ;
 
     return unless $content and $resp->vclock;
 
