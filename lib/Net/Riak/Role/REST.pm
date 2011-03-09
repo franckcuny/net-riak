@@ -7,6 +7,7 @@ use URI;
 use Moose::Role;
 use MooseX::Types::Moose 'Bool';
 use Net::Riak::Types qw/HTTPResponse HTTPRequest/;
+use Data::Dump 'pp';
 with qw/Net::Riak::Role::REST::Bucket Net::Riak::Role::REST::Object/;
 
 has http_request => (
@@ -58,6 +59,10 @@ sub send_request {
     my $r = $self->useragent->request($req);
 
     $self->http_response($r);
+
+    if ($ENV{RIAK_VERBOSE}) {
+        print STDERR pp($r);
+    }
 
     return $r;
 }
