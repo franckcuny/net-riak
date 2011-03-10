@@ -1,12 +1,12 @@
 package Net::Riak::Role::PBC::Bucket;
 
 use Moose::Role;
+use Data::Dumper;
 
 sub get_properties {
     my ( $self, $name, $params ) = @_;
     my $resp = $self->send_message( GetBucketReq => { bucket => $name } );
-
-    return { %{ $resp->props } };
+    return { props =>  { %{ $resp->props } } };
 }
 
 sub set_properties {
