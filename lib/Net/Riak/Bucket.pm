@@ -40,7 +40,7 @@ sub allow_multiples {
         $self->set_property('allow_mult', $bool);
     }
     else {
-        return $self->get_property('allow_mult');
+        return $self->get_property('allow_mult') ? 1 : 0;
     }
 }
 
