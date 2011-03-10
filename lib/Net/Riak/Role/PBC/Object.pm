@@ -44,18 +44,23 @@ sub load_object {
 sub delete_object {
     my ( $self, $params, $object ) = @_;
 
-    return $self->send_message(
+    my $resp = $self->send_message(
         DelReq => {
-            bucket => $object->bucket,
+            bucket => $object->bucket->name,
             key    => $object->key,
             rw     => $params->{w},
         }
     );
+
+    $object;
 }
 
 sub populate_object {
     my ( $self, $object, $resp) = @_;
-    
+
+    $object->_clear_links;
+    $object->exists(0);
+
     my $content = $resp->content ? $resp->content->[0] : undef ;
 
     return unless $content and $resp->vclock;
@@ -66,6 +71,8 @@ sub populate_object {
 
     my $data = ($object->content_type eq 'application/json') 
         ? JSON::decode_json($content->value) : $content->value;
+
+    $object->exists(1);
 
     $object->data($data);
 }
