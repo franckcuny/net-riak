@@ -114,6 +114,28 @@ sub populate_object {
     }
 }
 
+sub retrieve_sibling {
+    my ($self, $object, $params) = @_;
+
+    my $request = $self->new_request(
+        'GET',
+        [$self->prefix, $object->bucket->name, $object->key], 
+        $params
+    );
+
+    my $response = $self->send_request($request);
+    
+    my $sibling = Net::Riak::Object->new(
+        client => $self,
+        bucket => $object->bucket,
+        key    => $object->key
+    );
+
+    $sibling->_jsonize($object->_jsonize);
+    $self->populate_object($sibling, $response, [200]);
+    $sibling;
+}
+
 
 sub _links_to_header {
     my ($self, $object) = @_;

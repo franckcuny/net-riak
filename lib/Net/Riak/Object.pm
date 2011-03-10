@@ -128,21 +128,10 @@ sub sibling {
     $r ||= $self->bucket->r;
 
     my $vtag = $self->get_sibling($id);
-    my $params = {r => $r, vtag => $vtag};
 
-    my $request =
-      $self->client->new_request('GET',
-        [$self->client->prefix, $self->bucket->name, $self->key], $params);
-    my $response = $self->client->send_request($request);
-
-    my $obj = Net::Riak::Object->new(
-        client => $self->client,
-        bucket => $self->bucket,
-        key    => $self->key
+    return $self->client->retrieve_sibling(
+        $self, {r => $r, vtag => $vtag}
     );
-    $obj->_jsonize($self->_jsonize);
-    $self->client->populate_object($obj, $response, [200]);
-    $obj;
 }
 
 
