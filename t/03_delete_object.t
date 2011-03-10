@@ -12,6 +12,7 @@ test_riak {
     $obj = $bucket->get('foo');
     ok $obj->exists, 'object exists';
     $obj->delete;
+    ok $obj->exists, " exists after delete";
     $obj->load;
-    ok !$obj->exists, "object don't exists anymore";
+    ok !$obj->exists, "object don't exists after load";
 };
