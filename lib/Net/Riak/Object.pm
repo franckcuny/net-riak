@@ -100,28 +100,7 @@ sub clear {
     $self;
 }
 
-sub _populate_links {
-    my ($self, $links) = @_;
 
-    for my $link (split(',', $links)) {
-        if ($link
-            =~ /\<\/([^\/]+)\/([^\/]+)\/([^\/]+)\>; ?riaktag=\"([^\']+)\"/)
-        {
-            my $bucket = $2;
-            my $key    = $3;
-            my $tag    = $4;
-            my $l      = Net::Riak::Link->new(
-                bucket => Net::Riak::Bucket->new(
-                    name   => $bucket,
-                    client => $self->client
-                ),
-                key => $key,
-                tag => $tag
-            );
-            $self->add_link($l);
-        }
-    }
-}
 
 sub sibling {
     my ($self, $id, $r) = @_;

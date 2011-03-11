@@ -89,7 +89,7 @@ sub populate_object {
     $obj->exists(1);
 
     if ($http_response->header('link')) {
-        $obj->_populate_links($http_response->header('link'));
+        $self->_populate_links($obj, $http_response->header('link'));
     }
 
     if ($status == 300) {
@@ -134,6 +134,29 @@ sub retrieve_sibling {
     $sibling->_jsonize($object->_jsonize);
     $self->populate_object($sibling, $response, [200]);
     $sibling;
+}
+
+sub _populate_links {
+    my ($self, $object, $links) = @_;
+
+    for my $link (split(',', $links)) {
+        if ($link
+            =~ /\<\/([^\/]+)\/([^\/]+)\/([^\/]+)\>; ?riaktag=\"([^\']+)\"/)
+        {
+            my $bucket = $2;
+            my $key    = $3;
+            my $tag    = $4;
+            my $l      = Net::Riak::Link->new(
+                bucket => Net::Riak::Bucket->new(
+                    name   => $bucket,
+                    client => $self
+                ),
+                key => $key,
+                tag => $tag
+            );
+            $object->add_link($l);
+        }
+    }
 }
 
 
