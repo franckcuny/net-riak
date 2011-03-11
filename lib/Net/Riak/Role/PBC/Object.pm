@@ -2,6 +2,8 @@ package Net::Riak::Role::PBC::Object;
 
 use JSON;
 use Moose::Role;
+use Data::Dumper;
+use List::Util 'first';
 
 sub store_object {
     my ($self, $w, $dw, $object) = @_;
@@ -38,6 +40,7 @@ sub load_object {
     );
 
     $self->populate_object($object, $resp);
+
     return $object;
 }
 
@@ -61,7 +64,11 @@ sub populate_object {
     $object->_clear_links;
     $object->exists(0);
 
-    my $content = $resp->content ? $resp->content->[0] : undef ;
+    if ( $resp->content && scalar (@{$resp->content}) > 1) {
+        $object->siblings([ map { $_->vtag } @{$resp->content}]);
+    }
+
+    my $content = $resp->content ? $resp->content->[0] : undef;
 
     return unless $content and $resp->vclock;
 
@@ -75,6 +82,41 @@ sub populate_object {
     $object->exists(1);
 
     $object->data($data);
+}
+
+
+# This emulates the behavior of the existing REST client.
+sub retrieve_sibling {
+    my ($self, $object, $params) = @_;
+
+    my $resp = $self->send_message(
+        GetReq => {
+            bucket => $object->bucket->name,
+            key    => $object->key,
+            r      => $params->{r},
+        }
+    );
+
+    # hack for loading 1 sibling
+    if ($params->{vtag}) {
+        $resp->{content} = [ 
+            first {
+                $_->vtag eq $params->{vtag}
+            } @{$resp->content}
+        ];
+    }
+
+    my $sibling = Net::Riak::Object->new(
+        client => $self,
+        bucket => $object->bucket,
+        key    => $object->key
+    );
+
+    $sibling->_jsonize($object->_jsonize);
+
+    $self->populate_object($sibling, $resp);
+    
+    $sibling;
 }
 
 1;
