@@ -14,9 +14,12 @@ sub store_object {
     my $content = {
         content_type => $object->content_type,
         value => $value,
-        links => undef,
         usermeta => undef
     };
+
+    if ($object->has_links) {
+        $content->{links} = $self->_links_for_message($object);
+    }
 
     $self->send_message(
         PutReq => {
@@ -75,6 +78,10 @@ sub populate_object {
     $object->vclock($resp->vclock);
     $object->vtag($content->vtag);
     $object->content_type($content->content_type);
+
+    if($content->links) {
+        $self->_populate_links($object, $content->links);
+    }
 
     my $data = ($object->content_type eq 'application/json') 
         ? JSON::decode_json($content->value) : $content->value;
