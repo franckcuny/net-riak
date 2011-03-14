@@ -16,8 +16,7 @@ test_riak {
     $obj->add_link($obj3, "tag2!@&");
     $obj->store;
     $obj = $bucket->get("foo");
-    my $count = $obj->count_links;
-    is $count, 3, 'got 3 links';
+    is $obj->has_links, 3, 'got 3 links';
 };
 
 # link walking
