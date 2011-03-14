@@ -34,6 +34,7 @@ has links => (
         count_links => 'elements',
         append_link => 'push',
         has_links   => 'count',
+        all_links   => 'elements',
     },
     clearer => '_clear_links',
 );
@@ -54,6 +55,10 @@ has siblings => (
     },
     clearer => '_clear_siblings',
 );
+
+after count_links => sub {
+    warn "count_links is deprecated please use has_links or all_links.";
+};
 
 sub store {
     my ($self, $w, $dw) = @_;
@@ -95,8 +100,6 @@ sub clear {
     $self;
 }
 
-
-
 sub sibling {
     my ($self, $id, $r) = @_;
     $r ||= $self->bucket->r;
@@ -107,7 +110,6 @@ sub sibling {
         $self, {r => $r, vtag => $vtag}
     );
 }
-
 
 sub _build_link {
     my ($self,$obj,$tag) = @_;
@@ -228,7 +230,11 @@ Return an array of Siblings
 
 =over 4
 
-=item count_links
+=item all_links
+
+Return the number of links
+
+=item has_links
 
 Return the number of links
 
