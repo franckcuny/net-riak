@@ -1,7 +1,9 @@
 next release
-    - list_buckets (Robin Edwards)
-    - limited PBC support (Robin Edwards)
-    - disable_return_body flag (Robin Edwards)
+	- DEPRECATED $object->status
+	- DEPRECATED $object->count_links, added all_links
+    - PBC support
+	- added Test::Riak for testing both protocols
+    - disable_return_body flag
 
 0.13
 	- Enviroment variable for riak when running tests (Robin Edwards)

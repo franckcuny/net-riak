@@ -10,7 +10,9 @@ use Net::Riak::Types qw/HTTPResponse HTTPRequest/;
 use Data::Dump 'pp';
 with qw/Net::Riak::Role::REST::Bucket 
     Net::Riak::Role::REST::Object 
-    Net::Riak::Role::REST::Link/;
+    Net::Riak::Role::REST::Link
+    Net::Riak::Role::REST::MapReduce
+    /;
 
 has http_request => (
     is => 'rw',
