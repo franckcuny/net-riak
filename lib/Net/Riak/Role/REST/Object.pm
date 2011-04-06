@@ -95,6 +95,7 @@ sub populate_object {
     if ($status == 300) {
         my @siblings = split("\n", $obj->data);
         shift @siblings;
+        my %seen; @siblings = grep { !$seen{$_}++ } @siblings;
         $obj->siblings(\@siblings);
     }
     

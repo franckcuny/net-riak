@@ -30,8 +30,9 @@ sub test_riak (&) {
 
         isa_ok $client, 'Net::Riak';
         is $client->is_alive, 1, 'connected';
-        run_test_case($test_case, $client);
-    } else {
+        run_test_case($test_case, $client, 'PBC');
+    } 
+    else {
         diag "Skipping PBC tests - RIAK_PBC_HOST not set";
     }
 
@@ -41,7 +42,7 @@ sub test_riak (&) {
         my $client = Net::Riak->new(host => $ENV{RIAK_REST_HOST});
         isa_ok $client, 'Net::Riak';
         is $client->is_alive, 1, 'connected';
-        run_test_case($test_case, $client);
+        run_test_case($test_case, $client, 'REST');
     }
     else {
         diag "Skipping REST tests - RIAK_REST_HOST not set";
@@ -49,7 +50,9 @@ sub test_riak (&) {
 }
 
 sub new_riak_client {
-    if ($ENV{RIAK_PBC_HOST}) {
+    my $proto = shift;
+
+    if ($proto eq 'PBC') {
         my ($host, $port) = split ':', $ENV{RIAK_PBC_HOST};
 
         return  Net::Riak->new(
@@ -58,17 +61,20 @@ sub new_riak_client {
             port  => $port,
         );
     }
-    
-    return  Net::Riak->new(host => $ENV{RIAK_REST_HOST});
+    elsif ($proto eq 'REST') {
+        return Net::Riak->new(host => $ENV{RIAK_REST_HOST});
+    }
+
+    die "Unknown protocol $proto";
 }
 
 sub run_test_case {
-    my ($case, $client) = @_;;
+    my ($case, $client, $proto) = @_;
 
-    my $bucket = "TEST_RIAK_$$\_".time;
+    my $bucket = "TEST_RIAK_$$".sprintf("%d", rand()*1000);
 
     local $@;
-    eval { $case->($client, $bucket) };
+    eval { $case->($client, $bucket, $proto) };
 
     if ($@) {
         ok 0, "$@";

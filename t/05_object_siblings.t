@@ -1,11 +1,9 @@
 use lib 't/lib';
 use Test::More;
 use Test::Riak;
-use Data::Dumper;
-
 
 test_riak {
-    my ($client, $bucket_name) = @_;
+    my ($client, $bucket_name, $proto) = @_;
 
     my $bucket = $client->bucket($bucket_name);
     $bucket->allow_multiples(1);
@@ -13,10 +11,14 @@ test_riak {
 
     {
         # test bucket still has multiples sep li    
-        my $client = new_riak_client();
+        my $client = new_riak_client($proto);
         my $bucket = $client->bucket($bucket_name);
         ok $bucket->allow_multiples, 'bucket multiples set to 1';
     }
+};
+
+=cut
+    exit;
 
     {
         my $obj = $bucket->get('foo');

@@ -68,7 +68,9 @@ sub populate_object {
     $object->exists(0);
 
     if ( $resp->content && scalar (@{$resp->content}) > 1) {
-        $object->siblings([ map { $_->vtag } @{$resp->content}]);
+        my %seen;
+        my @vtags = grep { !$seen{$_}++ } map { $_->vtag } @{$resp->content};
+        $object->siblings(\@vtags);
     }
 
     my $content = $resp->content ? $resp->content->[0] : undef;
