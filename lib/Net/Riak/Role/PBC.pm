@@ -67,4 +67,10 @@ sub all_buckets {
     return @{$resp->buckets};  
 }
 
+sub server_info {
+    my $self = shift;
+    my $resp = $self->send_message('GetServerInfoReq');
+    return $resp;
+}
+
 1; 
