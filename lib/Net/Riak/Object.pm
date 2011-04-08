@@ -57,7 +57,7 @@ has siblings => (
 );
 
 after count_links => sub {
-    warn "count_links is deprecated please use has_links or all_links.";
+    warn "DEPRECATED: count_links method will be removed in the 0.17 release, please use has_links.";
 };
 
 sub store {
@@ -71,7 +71,7 @@ sub store {
 
 sub status {
     my ($self) = @_;
-    warn "Called deprecated status method. Please call \$object->client->status";
+    warn "DEPRECATED: status method will be removed in the 0.17 release, please use ->client->status.";
     $self->client->status;
 }   
 

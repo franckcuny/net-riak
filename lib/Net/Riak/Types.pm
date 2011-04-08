@@ -17,12 +17,14 @@ coerce RiakHost, from Str, via {
 };
 
 coerce RiakHost, from ArrayRef, via {
+    warn "DEPRECATED: Support for multiple hosts will be removed in the 0.17 release.";
     my $backends = $_;
     my $weight   = 1 / @$backends;
     [ map { { node => $_, weight => $weight } } @$backends ];
 };
 
 coerce RiakHost, from HashRef, via {
+    warn "DEPRECATED: Support for multiple hosts will be removed in the 0.17 release.";
     my $backends = $_;
     my $total    = 0;
     $total += $_ for values %$backends;
