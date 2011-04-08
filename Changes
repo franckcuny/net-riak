@@ -1,9 +1,15 @@
-next release
-	- DEPRECATED $object->status
-	- DEPRECATED $object->count_links, added all_links
-    - PBC support
-	- added Test::Riak for testing both protocols
-    - disable_return_body flag
+0.15 
+	- added list bucket support for both protocols (0.14+ for REST)
+    - added PBC support
+	- added Test::Riak for running tests on both protocols
+    - added disable_return_body flag, in REST mode prevents body being returned on store
+
+    DEPRECATIONS
+    - $object->status please call $object->client->status (for REST only)
+    - $object->count_links, added ->has_links and ->all_links
+    - disable_return_body will become the default in 0.17
+    - support for providing multiple hosts when connecting (only supported by REST)
+      all load balancing code to be moved out of Net::Riak by 0.17.
 
 0.13
 	- Enviroment variable for riak when running tests (Robin Edwards)
