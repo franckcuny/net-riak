@@ -1,31 +1,15 @@
-use strict;
-use warnings;
-
+use lib 't/lib';
 use Test::More;
-use Net::Riak;
+use Test::Riak;
 
-BEGIN {
-  unless ($ENV{RIAK_PBC_HOST}) {
-    Test::More::plan(skip_all => 'RIAK_REST_HOST not set.. skipping');
-  }
-}
+test_riak {
+    my ($client, $bucket_name) = @_;
 
-my ($host, $port) = split ':', $ENV{RIAK_PBC_HOST};
+    my $bucket = $client->bucket($bucket_name."_1");
+    ok $bucket->new_object( "bob" => { 'name' => 'bob', age => 23 } )->store, 'store';
 
-my $client = Net::Riak->new(
-    transport => 'PBC',
-    host  => $host,
-    port  => $port,
-);
+    $bucket = $client->bucket($bucket_name."_2");
+    ok $bucket->new_object( "bob" => { 'name' => 'bob', age => 23 } )->store, 'store';
 
-ok $client->is_alive;
-
-my $bucket = $client->bucket("TEST_$$\_foo");
-ok $bucket->new_object( "bob" => { 'name' => 'bob', age => 23 } )->store, 'store';
-
-$bucket = $client->bucket("TEST_$$\_foo1");
-ok $bucket->new_object( "bob" => { 'name' => 'bob', age => 23 } )->store, 'store';
-
-ok scalar( $client->all_buckets) >= 2, 'listed buckets';
-
-done_testing();
+    ok scalar( $client->all_buckets) >= 2, 'listed buckets';
+};

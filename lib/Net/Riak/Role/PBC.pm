@@ -64,7 +64,7 @@ sub connect {
 sub all_buckets {
     my $self = shift;
     my $resp = $self->send_message('ListBucketsReq');
-    return $resp->buckets;  
+    return @{$resp->buckets};  
 }
 
 1; 

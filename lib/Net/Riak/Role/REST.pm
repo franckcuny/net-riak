@@ -73,9 +73,19 @@ sub send_request {
 
 sub is_alive {
     my $self     = shift;
-    my $request  = $self->new_request('GET', ['ping']);
+    my $request  = $self->new_request('HEAD', ['ping']);
     my $response = $self->send_request($request);
     $self->is_success ? return 1 : return 0;
+}
+
+sub all_buckets {
+    my $self = shift;
+    my $request = $self->new_request('GET', [$self->prefix], {buckets => 'true'});
+    my $response = $self->send_request($request);
+    die "Failed to fetch buckets.. are you running riak 0.14+?" 
+        unless $response->is_success;
+    my $resp = JSON::decode_json($response->content);
+    return @{$resp->{buckets}};
 }
 
 1;
