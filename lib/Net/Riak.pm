@@ -34,7 +34,7 @@ sub bucket {
 =head1 SYNOPSIS
 
     my $client = Net::Riak->new(
-        host => 'http://10.0.0.40:8098', 
+        host => 'http://10.0.0.40:8098',
         ua_timeout => 900
     );
 

@@ -45,7 +45,7 @@ ok my $item = $bucket_two->new_object( '25FCBA57-8D75-41B6-9E5A-0E2528BB3342' =>
 foreach my $person ( $ref1, $ref2 ) {
     my $link = Net::Riak::Link->new(
         bucket => $bucket_one,
-        key    => $person->{username},
+        key    => $person->{email},
         tag    => 'owners'
     );
     ok $item->add_link( $link ), 'link added to object';
@@ -56,10 +56,11 @@ ok $item->store( 1, 1 ), 'object stored';
 
 my $test_links = $bucket_two->get('25FCBA57-8D75-41B6-9E5A-0E2528BB3342', [1]);
 my $links = $test_links->links;
-is $links->[0]->key, 'griffinp', 'good owner for first link';
-is $links->[1]->key, 'griffins', 'good owner for second link';
+is $links->[0]->key, 'peter@familyguy.com', 'good owner for first link';
+is $links->[1]->key, 'stewie@familyguy.com', 'good owner for second link';
 
 $test_links->remove_link($links->[0]);
 $links = $test_links->links;
-is $links->[0]->key, 'griffins', 'good owner for second link after a remove link';
+is $links->[0]->key, 'stewie@familyguy.com', 'good owner for second link after a remove link';
+
 done_testing;

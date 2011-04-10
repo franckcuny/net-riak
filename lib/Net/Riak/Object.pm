@@ -64,7 +64,7 @@ sub store {
     if (defined $self->key) {
       push @$path, $self->key;
       $method = 'PUT';
-    } 
+    }
 
     my $request = $self->client->new_request($method, $path, $params);
 
@@ -168,13 +168,13 @@ sub populate {
         shift @siblings;
         $self->siblings(\@siblings);
     }
-    
+
     if ($status == 201) {
         my $location = $http_response->header('location');
         my ($key)    = ($location =~ m!/([^/]+)$!);
         $self->key($key);
-    } 
-    
+    }
+
 
     if ($status == 200 || $status == 201) {
         $self->content_type($http_response->content_type)
@@ -185,16 +185,21 @@ sub populate {
     }
 }
 
+sub _uri_decode {
+  my $str = shift;
+  $str =~ s/%([a-fA-F0-9]{2,2})/chr(hex($1))/eg;
+  return $str;
+}
+
 sub _populate_links {
     my ($self, $links) = @_;
-
     for my $link (split(',', $links)) {
         if ($link
             =~ /\<\/([^\/]+)\/([^\/]+)\/([^\/]+)\>; ?riaktag=\"([^\']+)\"/)
         {
-            my $bucket = $2;
-            my $key    = $3;
-            my $tag    = $4;
+            my $bucket = _uri_decode($2);
+            my $key    = _uri_decode($3);
+            my $tag    = _uri_decode($4);
             my $l      = Net::Riak::Link->new(
                 bucket => Net::Riak::Bucket->new(
                     name   => $bucket,
