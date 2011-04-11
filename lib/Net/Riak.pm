@@ -40,7 +40,7 @@ sub bucket {
     
     # REST interface
     my $client = Net::Riak->new(
-        host => 'http://10.0.0.40:8098', 
+        host => 'http://10.0.0.40:8098',
         ua_timeout => 900,
         disable_return_body => 1
     );

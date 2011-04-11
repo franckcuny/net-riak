@@ -2,7 +2,6 @@ package Net::Riak::Object;
 
 # ABSTRACT: holds meta information about a Riak object
 
-use Carp;
 use Moose;
 use Scalar::Util;
 use Net::Riak::Link;

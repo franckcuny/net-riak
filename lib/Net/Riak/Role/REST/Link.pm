@@ -10,9 +10,9 @@ sub _populate_links {
         if ($link
             =~ /\<\/([^\/]+)\/([^\/]+)\/([^\/]+)\>; ?riaktag=\"([^\']+)\"/)
         {
-            my $bucket = $2;
-            my $key    = $3;
-            my $tag    = $4;
+            my $bucket = _uri_decode($2);
+            my $key    = _uri_decode($3);
+            my $tag    = _uri_decode($4);
             my $l      = Net::Riak::Link->new(
                 bucket => Net::Riak::Bucket->new(
                     name   => $bucket,
@@ -24,6 +24,12 @@ sub _populate_links {
             $object->add_link($l);
         }
     }
+}
+
+sub _uri_decode {
+  my $str = shift;
+  $str =~ s/%([a-fA-F0-9]{2,2})/chr(hex($1))/eg;
+  return $str;
 }
 
 sub _links_to_header {
