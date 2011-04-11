@@ -88,4 +88,13 @@ sub all_buckets {
     return @{$resp->{buckets}};
 }
 
+sub server_info { die "->server_info not supported by the REST interface" }
+
+sub stats {
+    my $self = shift;
+    my $request = $self->new_request('GET', ["stats"]);
+    my $response = $self->send_request($request);
+    return JSON::decode_json($response->content);
+}
+
 1;

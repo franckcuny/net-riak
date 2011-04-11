@@ -73,4 +73,6 @@ sub server_info {
     return $resp;
 }
 
+sub stats { die "->stats is only avaliable through the REST interface" }
+
 1; 

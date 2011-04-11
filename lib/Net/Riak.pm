@@ -14,7 +14,7 @@ has client => (
     is       => 'rw',
     isa      => Client_T,
     required => 1,
-    handles  => [qw/is_alive all_buckets server_info/]
+    handles  => [qw/is_alive all_buckets server_info stats/]
 );
 
 sub BUILDARGS {
@@ -126,9 +126,11 @@ timeout for L<LWP::UserAgent> in seconds, defaults to 3.
 
 =item B<disable_return_body (REST only)>
 
-Disable returning of object content on store operation. This will become the default in 0.17.
+Disable returning of object content in response in a store operation.
 
-NOTE: if the object has siblings these will not be available without an additional fetch
+If set  to true and the object has siblings these will not be available without an additional fetch.
+
+This will become the default behaviour in 0.17 
 
 =back
 
@@ -150,7 +152,7 @@ Check if the Riak server for this client is alive
 
 =head2 all_buckets
 
-List all buckets, requires PBC connection
+List all buckets, requires Riak 0.14+ or PBC connection.
 
 =head2 add
 
@@ -176,13 +178,13 @@ Start assembling a Map/Reduce operation
 
 Start assembling a Map/Reduce operation
 
-=method http_request
+=head2 server_info (PBC only)
+    
+    $client->server_info->{server_version};
 
-Returns the HTTP::Request object from the last request
+=head2 stats (REST only)
 
-=method http_response
-
-Returns a HTTP::Response object from the last request
+    say Dumper $client->stats;
 
 =head2 SEE ALSO
 

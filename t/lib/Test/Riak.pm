@@ -8,10 +8,10 @@ sub import {
     no strict 'refs';
     *{caller()."::test_riak"} = \&{"Test::Riak::test_riak"};
     *{caller()."::test_riak_pbc"} = \&{"Test::Riak::test_riak_pbc"};
+    *{caller()."::test_riak_rest"} = \&{"Test::Riak::test_riak_rest"};
     *{caller()."::new_riak_client"} = \&{"Test::Riak::new_riak_client"};
     strict->import;
     warnings->import;
-    use Test::More;
 }
 
 sub test_riak (&) {
