@@ -14,7 +14,7 @@ has client => (
     is       => 'rw',
     isa      => Client_T,
     required => 1,
-    handles  => [qw/is_alive all_buckets/]
+    handles  => [qw/is_alive all_buckets server_info/]
 );
 
 sub BUILDARGS {
