@@ -56,8 +56,4 @@ test_riak {
     $test_links->remove_link($links->[0]);
     $links = $test_links->links;
     is $links->[0]->key, 'stewie@familyguy.com', 'good owner for second link after a remove link';
-
-    $test_links->remove_link($links->[0]);
-    $links = $test_links->links;
-    is $links->[0]->key, 'griffins', 'good owner for second link after a remove link';
 };

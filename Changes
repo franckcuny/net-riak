@@ -1,4 +1,5 @@
 0.15 
+	- fixed link encoding (Simon Wistow)
 	- added stats method for REST
 	- added server_info method for PBC
 	- added list bucket support for both protocols (0.14+ for REST)
