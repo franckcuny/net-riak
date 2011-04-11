@@ -1,6 +1,5 @@
 package Net::Riak::Bucket;
 use Moose;
-use Carp;
 use Net::Riak::Object;
 use Net::Riak::Types Client => {-as => 'Client_T'};
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
