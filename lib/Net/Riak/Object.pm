@@ -8,7 +8,7 @@ use Net::Riak::Link;
 
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
 with 'Net::Riak::Role::Base' => {classes =>
-      [{name => 'bucket', required => 1}]};#, {name => 'client', required => 1}]};
+      [{name => 'bucket', required => 1}]};
 use Net::Riak::Types Client => {-as => 'Client_T'};
 has client => (
     is       => 'rw',
