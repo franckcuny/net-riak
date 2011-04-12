@@ -59,11 +59,6 @@ sub bucket {
     $obj = $bucket->get('new_post');
     say "title for ".$obj->key." is ".$obj->data->{title};
 
-    # When using the REST client you may access the last request and response.
-
-    my $req = $client->http_request; # last request
-    $client->http_response # last response
-
 =head1 DESCRIPTION
 
 =head2 ATTRIBUTES
@@ -189,5 +184,9 @@ Start assembling a Map/Reduce operation
 =head2 SEE ALSO
 
 Net::Riak::MapReduce
+
+Net::Riak::Object
+
+Net::Riak::Bucket
 
 =cut
