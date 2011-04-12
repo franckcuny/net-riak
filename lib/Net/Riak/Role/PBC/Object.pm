@@ -54,7 +54,7 @@ sub delete_object {
         DelReq => {
             bucket => $object->bucket->name,
             key    => $object->key,
-            rw     => $params->{w},
+            rw     => $params->{dw},
         }
     );
 
