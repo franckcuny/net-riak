@@ -18,4 +18,8 @@ test_riak {
     is $obj->key, 'foo', 'valid key';
     is_deeply $obj->data, $content, 'valid content';
 
+    ok $obj = $bucket->new_object(undef, $content),
+      'created a new riak object without a key';
+    ok $obj->store, 'store object without key';
+    ok $obj->key, 'key created';
 };
