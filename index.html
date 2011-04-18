@@ -4,30 +4,19 @@
   <meta charset='utf-8'>
 
   <title>franckcuny/net-riak @ GitHub</title>
+  <link rel="stylesheet" href="/static/css/project.css" media="screen, projection" />
+  <script type="text/javascript"> 
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18479905-1']);
+    _gaq.push(['_trackPageview']);
+ 
+    (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script> 
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #676cbe;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #989341; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #989341; }
-    h3 { text-align: center; color: #989341; }
-    a { color: #989341; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
 </head>
 
 <body>
@@ -46,8 +35,32 @@
       <span class="small">by <a href="http://github.com/franckcuny">franckcuny</a></span></h1>
 
     <div class="description">
-      riak interface in Perl
+      Riak interface in Perl
     </div>
+
+    <h2>Synopsis</h2>
+    <pre>
+# REST interface
+my $client = Net::Riak->new(
+    host => 'http://10.0.0.40:8098',
+    ua_timeout => 900,
+    disable_return_body => 1
+);
+
+# Or PBC interface.
+my $client = Net::Riak->new(
+    transport => 'PBC',
+    host => '10.0.0.40',
+    port => 8080
+);
+
+my $bucket = $client->bucket('blog');
+my $obj    = $bucket->new_object('new_post', {title => 'foo', content => 'bar'});
+$obj->store;
+
+$obj = $bucket->get('new_post');
+say "title for ".$obj->key." is ".$obj->data->{title};
+</pre>
 
     <h2>Authors</h2>
 <p>franck cuny (franck@lumberjaph.net)<br/>Gavin Carr (gavin@openfusion.com.au)<br/>gmaurice (gmaurice@gm.livebox.home)<br/>ben hengst (notbenh@cpan.org)<br/>Robin Edwards (robin.ge@gmail.com)<br/>Simon Wistow (simon@thegestalt.org)<br/><br/>      </p>
