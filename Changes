@@ -6,6 +6,7 @@
     - added PBC support
     - added Test::Riak for running tests on both protocols
     - added disable_return_body flag, in REST mode prevents body being returned on store
+    - create new object without keys (SymKat <symkat@symkat.com>)
 
     DEPRECATIONS
     - $object->status please call $object->client->status (for REST only)

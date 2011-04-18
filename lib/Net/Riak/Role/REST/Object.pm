@@ -11,9 +11,15 @@ sub store_object {
     $params->{returnbody} = 'false'
         if $self->disable_return_body;
 
-    my $request =
-      $self->new_request('PUT',
+    
+    my $request;
+    if ( defined $object->key ) {
+      $request = $self->new_request('PUT',
         [$self->prefix, $object->bucket->name, $object->key], $params);
+    } else {
+      $request = $self->new_request('POST',
+        [$self->prefix, $object->bucket->name ], $params);
+    }
 
     $request->header('X-Riak-ClientID' => $self->client_id);
     $request->header('Content-Type'    => $object->content_type);
@@ -74,6 +80,11 @@ sub populate_object {
 
     $obj->data($http_response->content)
         unless $self->disable_return_body;
+
+    if ( $http_response->header('location') ) {
+        $obj->key( $http_response->header('location') );
+        $obj->location( $http_response->header('location') );
+    }
 
     if (!grep { $status == $_ } @$expected) {
         confess "Expected status "

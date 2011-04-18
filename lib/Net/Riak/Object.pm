@@ -21,6 +21,7 @@ has data         => (is => 'rw', isa => 'Any', clearer => '_clear_data');
 has vclock       => (is => 'rw', isa => 'Str', predicate => 'has_vclock');
 has vtag          => (is => 'rw', isa => 'Str');
 has content_type => (is => 'rw', isa => 'Str', default => 'application/json');
+has location     => ( is => 'rw', isa => 'Str' );
 has _jsonize     => (is => 'rw', isa => 'Bool', lazy => 1, default => 1);
 has links => (
     traits     => ['Array'],
