@@ -154,7 +154,10 @@ sub retrieve_sibling {
 1;
 __END__
 
+=over 3
+
 =item populate_object
 
 Given the output of RiakUtils.http_request and a list of statuses, populate the object. Only for use by the Riak client library.
 
+=back

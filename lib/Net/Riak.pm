@@ -63,7 +63,7 @@ sub bucket {
 
 =head2 ATTRIBUTES
 
-=over 4
+=over 2
 
 =item B<host>
 
@@ -75,19 +75,13 @@ default 'http://127.0.0.1:8098'
 
 Note that providing multiple hosts is now deprecated.
 
-=back
-
 =item B<port>
 
 Port of the PBC interface.
 
-=back
-
 =item B<transport>
 
 Used to select the PB protocol by passing in 'PBC'
-
-=back
 
 =item B<prefix>
 
@@ -112,8 +106,6 @@ DW value setting for this client (default 2)
 =item B<client_id>
 
 client_id for this client
-
-=back
 
 =item B<ua_timeout (REST only)>
 
