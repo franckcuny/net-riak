@@ -6,19 +6,24 @@ use Moose;
 
 use Net::Riak::Client;
 use Net::Riak::Bucket;
+use Net::Riak::Types Client => { -as => 'Client_T' };
 
 with 'Net::Riak::Role::MapReduce';
 
 has client => (
     is       => 'rw',
-    isa      => 'Net::Riak::Client',
+    isa      => Client_T,
     required => 1,
-    handles  => [qw/is_alive http_request http_response/]
+    handles  => [qw/is_alive all_buckets server_info stats/]
 );
 
 sub BUILDARGS {
     my ($class, %args) = @_;
-    my $client = Net::Riak::Client->new(%args);
+
+    my $transport = $args{transport} || 'REST';
+    my $trait = "Net::Riak::Transport::".$transport;
+
+    my $client = Net::Riak::Client->with_traits($trait)->new(%args);
     $args{client} = $client;
     \%args;
 }
@@ -32,10 +37,19 @@ sub bucket {
 1;
 
 =head1 SYNOPSIS
-
+    
+    # REST interface
     my $client = Net::Riak->new(
         host => 'http://10.0.0.40:8098',
-        ua_timeout => 900
+        ua_timeout => 900,
+        disable_return_body => 1
+    );
+
+    # Or PBC interface.
+    my $client = Net::Riak->new(
+        transport => 'PBC',
+        host => '10.0.0.40',
+        port => 8080
     );
 
     my $bucket = $client->bucket('blog');
@@ -45,9 +59,6 @@ sub bucket {
     $obj = $bucket->get('new_post');
     say "title for ".$obj->key." is ".$obj->data->{title};
 
-    my $req = $client->http_request; # last request
-    $client->http_response # last response
-
 =head1 DESCRIPTION
 
 =head2 ATTRIBUTES
@@ -56,31 +67,27 @@ sub bucket {
 
 =item B<host>
 
-URL of the node (default 'http://127.0.0.1:8098'). If your ring is composed with more than one node, you can configure the client to hit more than one host, instead of hitting always the same node. For this, you can do one of the following:
+REST: The URL of the node
 
-=over 4
+PBC: The hostname of the node
 
-=item B<all nodes equals>
+default 'http://127.0.0.1:8098'
 
-    my $riak = Net::Riak->new(
-        host => [
-            'http://10.0.0.40:8098',
-            'http://10.0.0.41:8098'
-        ]
-    );
-
-=item B<give weight to nodes>
-
-    my $riak = Net::Riak->new(
-        host => [
-            {node => 'http://10.0.0.40:8098', weight => '0.2'},
-            {node => 'http://10.0.0.41:8098', weight => '0.8'}
-        ]
-    );
+Note that providing multiple hosts is now deprecated.
 
 =back
 
-Now, when a request is made, a node is picked at random, according to weight.
+=item B<port>
+
+Port of the PBC interface.
+
+=back
+
+=item B<transport>
+
+Used to select the PB protocol by passing in 'PBC'
+
+=back
 
 =item B<prefix>
 
@@ -108,9 +115,19 @@ client_id for this client
 
 =back
 
-=item B<ua_timeout>
+=item B<ua_timeout (REST only)>
 
 timeout for L<LWP::UserAgent> in seconds, defaults to 3.
+
+=item B<disable_return_body (REST only)>
+
+Disable returning of object content in response in a store operation.
+
+If set  to true and the object has siblings these will not be available without an additional fetch.
+
+This will become the default behaviour in 0.17 
+
+=back
 
 =head1 METHODS
 
@@ -127,6 +144,10 @@ Get the bucket by the specified name. Since buckets always exist, this will alwa
     }
 
 Check if the Riak server for this client is alive
+
+=head2 all_buckets
+
+List all buckets, requires Riak 0.14+ or PBC connection.
 
 =head2 add
 
@@ -152,16 +173,20 @@ Start assembling a Map/Reduce operation
 
 Start assembling a Map/Reduce operation
 
-=method http_request
+=head2 server_info (PBC only)
+    
+    $client->server_info->{server_version};
 
-Returns the HTTP::Request object from the last request
+=head2 stats (REST only)
 
-=method http_response
-
-Returns a HTTP::Response object from the last request
+    say Dumper $client->stats;
 
 =head2 SEE ALSO
 
 Net::Riak::MapReduce
+
+Net::Riak::Object
+
+Net::Riak::Bucket
 
 =cut

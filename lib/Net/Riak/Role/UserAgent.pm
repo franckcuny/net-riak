@@ -10,6 +10,12 @@ our $CONN_CACHE;
 
 sub connection_cache { $CONN_CACHE ||= LWP::ConnCache->new }
 
+has ua_timeout => (
+    is  => 'rw',
+    isa => 'Int',
+    default => 120
+);
+
 has useragent => (
     is      => 'rw',
     isa     => 'LWP::UserAgent',
@@ -24,7 +30,8 @@ has useragent => (
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = %opts;
 
         my $ua = LWP::UserAgent->new(
-            timeout => $self->ua_timeout
+            timeout => $self->ua_timeout,
+            keep_alive => 1,
         );
 
         $ua->conn_cache(__PACKAGE__->connection_cache);
