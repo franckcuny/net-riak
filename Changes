@@ -1,4 +1,4 @@
-0.15  
+0.15 Wed 20 Apr 2011 14:52:22 BST 
     - fixed link encoding (Simon Wistow)
     - added stats method for REST
     - added server_info method for PBC
@@ -6,7 +6,7 @@
     - added PBC support
     - added Test::Riak for running tests on both protocols
     - added disable_return_body flag, in REST mode prevents body being returned on store
-    - create new object without keys (SymKat <symkat@symkat.com>)
+    - create new object without keys (SymKat <symkat@symkat.com>) (REST only)
 
     DEPRECATIONS
     - $object->status please call $object->client->status (for REST only)

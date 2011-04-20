@@ -8,6 +8,8 @@ use List::Util 'first';
 sub store_object {
     my ($self, $w, $dw, $object) = @_;
 
+    die "Storing object without a key is not supported in the PBC interface" unless $object->key;
+
     my $value = (ref $object->data && $object->content_type eq 'application/json') 
             ? JSON::encode_json($object->data) : $object->data;
 
