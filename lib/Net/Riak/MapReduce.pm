@@ -91,6 +91,7 @@ sub add_bucket {
     my ($self, $bucket) = @_;
     $self->input_mode('bucket');
     $self->inputs_bucket($bucket);
+    $self;
 }
 
 sub link {
