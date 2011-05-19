@@ -173,12 +173,12 @@ Start assembling a Map/Reduce operation
 
     say Dumper $client->stats;
 
-=head2 SEE ALSO
+=head1 SEE ALSO
 
-Net::Riak::MapReduce
+L<Net::Riak::MapReduce>
 
-Net::Riak::Object
+L<Net::Riak::Object>
 
-Net::Riak::Bucket
+L<Net::Riak::Bucket>
 
 =cut
