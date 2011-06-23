@@ -89,7 +89,7 @@ sub populate_object {
     if (!grep { $status == $_ } @$expected) {
         confess "Expected status "
           . (join(', ', @$expected))
-          . ", received $status"
+          . ", received: ".$http_response->status_line
     }
 
     if ($status == 404) {
