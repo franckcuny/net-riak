@@ -24,8 +24,7 @@ sub search {
     if ($status == 404) {
         return;
     }
-use YAML::Syck;
-warn Dump $http_response;
+
     JSON::decode_json($http_response->content);
 };
 
