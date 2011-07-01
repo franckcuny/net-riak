@@ -1,7 +1,5 @@
 package Net::Riak::Search;
 
-# ABSTRACT: the riaklink object represents a link from one Riak object to another
-
 use Moose;
 
 with 'Net::Riak::Role::Base' => {classes =>
@@ -10,6 +8,11 @@ with 'Net::Riak::Role::Base' => {classes =>
 sub search {
     my ($self, $params) = @_;
     $self->client->search($params);
+};
+
+sub setup_indexing {
+    my ($self, $bucket) = @_;
+    $self->client->setup_indexing($bucket);
 };
 
 1;
