@@ -15,6 +15,11 @@ has mapred_prefix => (
     isa     => 'Str',
     default => 'mapred'
 );
+has search_prefix => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => 'solr'
+);
 has [qw/r w dw/] => (
     is      => 'rw',
     isa     => 'Int',

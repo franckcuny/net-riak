@@ -12,6 +12,7 @@ with qw/Net::Riak::Role::REST::Bucket
     Net::Riak::Role::REST::Object 
     Net::Riak::Role::REST::Link
     Net::Riak::Role::REST::MapReduce
+    Net::Riak::Role::REST::Search
     /;
 
 has http_request => (
