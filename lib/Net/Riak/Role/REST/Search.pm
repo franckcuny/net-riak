@@ -2,6 +2,8 @@ package Net::Riak::Role::REST::Search;
 use Moose::Role;
 use JSON;
 
+#ABSTRACT: Search interface
+
 sub search {
     my $self = shift;
     my %params = @_;

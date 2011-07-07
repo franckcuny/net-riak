@@ -58,6 +58,14 @@ sub bucket {
 
     $obj = $bucket->get('new_post');
     say "title for ".$obj->key." is ".$obj->data->{title};
+    
+    # Indexing and searching (REST interface)
+    $client->setup_indexing("bucket_name");
+    ...adding documents to riak...
+    my $response = $client->search(
+    	index => 'bucket_name',
+    	q 	  => 'field:value'
+    );
 
 =head1 DESCRIPTION
 
@@ -172,6 +180,18 @@ Start assembling a Map/Reduce operation
 =head2 stats (REST only)
 
     say Dumper $client->stats;
+
+=head2 search (REST only)
+
+    $client->search( index => 'bucket_name', q => 'field:value' );
+
+Makes a query to the index (see L<Net::Riak::Search> for more details on parameters)
+
+=head2 setup_indexing (REST only)
+
+    $client->setup_indexing('bucket_name');
+	
+Define precommit hook in order to enable indexing documents written into the given bucket 
 
 =head1 SEE ALSO
 
