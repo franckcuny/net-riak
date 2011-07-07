@@ -1,4 +1,5 @@
-package Net::Riak::Search;
+package
+Net::Riak::Search;
 use Moose;
 
 #ABSTRACT: Search interface
@@ -17,7 +18,6 @@ sub setup_indexing {
 };
 
 1;
-
 
 =head1 SYNOPSIS
 
@@ -45,8 +45,8 @@ L<Net::Riak::Search> allows you to enable indexing documents for a given bucket 
 
 Does the same as :
 
-    curl -X PUT -H "content-type:application/json" http://localhost:8098/riak/bucket_name -d '{"props":{"precommit":[{"mod":"riak_search_kv_hook","fun":"precommit"}]}' 
-	
+    curl -X PUT -H "content-type:application/json" http://localhost:8098/riak/bucket_name -d '{"props":{"precommit":[{"mod":"riak_search_kv_hook","fun":"precommit"}]}'
+
 but takes in account previouses precommits.
 
 =head3 search
