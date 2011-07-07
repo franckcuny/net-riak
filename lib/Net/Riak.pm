@@ -37,7 +37,7 @@ sub bucket {
 1;
 
 =head1 SYNOPSIS
-    
+
     # REST interface
     my $client = Net::Riak->new(
         host => 'http://10.0.0.40:8098',
@@ -58,7 +58,7 @@ sub bucket {
 
     $obj = $bucket->get('new_post');
     say "title for ".$obj->key." is ".$obj->data->{title};
-    
+
     # Indexing and searching (REST interface)
     $client->setup_indexing("bucket_name");
     ...adding documents to riak...
@@ -125,7 +125,7 @@ Disable returning of object content in response in a store operation.
 
 If set  to true and the object has siblings these will not be available without an additional fetch.
 
-This will become the default behaviour in 0.17 
+This will become the default behaviour in 0.17
 
 =back
 
@@ -174,7 +174,7 @@ Start assembling a Map/Reduce operation
 Start assembling a Map/Reduce operation
 
 =head2 server_info (PBC only)
-    
+
     $client->server_info->{server_version};
 
 =head2 stats (REST only)
@@ -190,8 +190,8 @@ Makes a query to the index (see L<Net::Riak::Search> for more details on paramet
 =head2 setup_indexing (REST only)
 
     $client->setup_indexing('bucket_name');
-	
-Define precommit hook in order to enable indexing documents written into the given bucket 
+
+Define precommit hook in order to enable indexing documents written into the given bucket
 
 =head1 SEE ALSO
 
