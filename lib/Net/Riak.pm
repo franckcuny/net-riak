@@ -42,7 +42,6 @@ sub bucket {
     my $client = Net::Riak->new(
         host => 'http://10.0.0.40:8098',
         ua_timeout => 900,
-        disable_return_body => 1
     );
 
     # Or PBC interface.
@@ -115,7 +114,7 @@ timeout for L<LWP::UserAgent> in seconds, defaults to 3.
 
 Disable returning of object content in response in a store operation.
 
-If set  to true and the object has siblings these will not be available without an additional fetch.
+If set to true and the object has siblings these will not be available without an additional fetch.
 
 This will become the default behaviour in 0.17 
 
