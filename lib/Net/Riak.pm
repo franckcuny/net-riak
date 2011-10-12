@@ -62,8 +62,8 @@ sub bucket {
     $client->setup_indexing("bucket_name");
     ...adding documents to riak...
     my $response = $client->search(
-    	index => 'bucket_name',
-    	q 	  => 'field:value'
+        index => 'bucket_name',
+        q     => 'field:value'
     );
 
 =head1 DESCRIPTION
