@@ -194,7 +194,11 @@ If set to True, then writes with conflicting data will be stored and returned to
     my $keys = $bucket->get_keys;
     my $keys = $bucket->get_keys($args);
 
-Return an arrayref of the list of keys for a bucket. Optionally takes a hashref of named parameters. Supported parameters are:
+Return an arrayref of the list of keys for a bucket.
+
+Note for the PBC interface: you will need a separate instance of the client (i.e separate connection) if you want to preform actions on the keys whilst streaming them.
+
+Optionally takes a hashref of named parameters. Supported parameters are:
 
 =over 4
 
