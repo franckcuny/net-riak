@@ -110,12 +110,17 @@ sub handle_response {
 sub _unpack_response {
     my $self = shift;
     my ( $len, $code, $msg );
-    $self->socket->read( $len, 4 );
+    _check($self->socket->read( $len, 4 ));
     $len = unpack( 'N', $len );
-    $self->socket->read( $code, 1 );
+    _check($self->socket->read( $code, 1 ));
     $code = unpack( 'c', $code );
-    $self->socket->read( $msg, $len - 1 );
+    _check($self->socket->read( $msg, $len - 1 ));
     return ( $code, $msg );
+}
+
+sub _check {
+    defined $_[0]
+      or die "failure in reading from the socket. Error were : $!";
 }
 
 1;
