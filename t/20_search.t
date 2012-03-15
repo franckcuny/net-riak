@@ -15,16 +15,16 @@ test_riak_rest {
     ok $obj->key, 'key created';
 
     is $client->search(
-    	index => $bucket_name,
-    	wt => "json",
-    	q => "field:indexed")->{response}->{docs}[0]->{id},
-    	$obj->key,
-    	'search with index in path';
+        index => $bucket_name,
+        wt => "json",
+        q => "field:indexed")->{response}->{docs}[0]->{id},
+        $obj->key,
+        'search with index in path';
 
     is $client->search(
-    	wt => "json",
-    	q => "$bucket_name.field:indexed")->{response}->{docs}[0]->{id},
-    	$obj->key,
-    	'search with index prefixes in query';
+        wt => "json",
+        q => "$bucket_name.field:indexed")->{response}->{docs}[0]->{id},
+        $obj->key,
+        'search with index prefixes in query';
     $obj->delete;
 }
