@@ -53,7 +53,8 @@ sub add {
     if (ref $arg eq 'ARRAY') {
         do{
             $self->add_input($arg);
-        }while(my $arg = shift @_);
+        }while($arg = shift @_);
+
         return $self;
     }
 
