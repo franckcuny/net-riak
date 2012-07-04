@@ -37,6 +37,12 @@ has socket => (
     predicate => 'has_socket',
 );
 
+has timeout => (
+    is => 'ro',
+    isa => Int,
+    default => 30,
+);
+
 sub is_alive {
     my $self = shift;
     return $self->send_message('PingReq');
@@ -56,7 +62,7 @@ sub connect {
             PeerAddr => $self->host,
             PeerPort => $self->port,
             Proto    => 'tcp',
-            Timeout  => 30,
+            Timeout  => $self->timeout,
         )
     );
 }
