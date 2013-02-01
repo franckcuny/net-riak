@@ -5,6 +5,7 @@ package Net::Riak::Object;
 use Moose;
 use Scalar::Util;
 use Net::Riak::Link;
+use Data::Dumper;
 
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
 with 'Net::Riak::Role::Base' => {classes =>
@@ -23,6 +24,9 @@ has vtag          => (is => 'rw', isa => 'Str');
 has content_type => (is => 'rw', isa => 'Str', default => 'application/json');
 has location     => ( is => 'rw', isa => 'Str' );
 has _jsonize     => (is => 'rw', isa => 'Bool', lazy => 1, default => 1);
+
+has i2indexes	=> ( is => 'rw', isa => 'HashRef' );
+
 has links => (
     traits     => ['Array'],
     is         => 'rw',
@@ -67,6 +71,31 @@ sub store {
     $dw ||= $self->dw;
 
     $self->client->store_object($w, $dw, $self);
+}
+
+sub i2index {
+	my($self, $args) = @_;
+	
+	if ( defined($args) ) {
+		my %args = %{$args};
+		my $ref = undef;
+		if ( defined($self->i2indexes) ) { $ref = $self->i2indexes; }
+		foreach my $i (keys %args)
+		{
+			
+			#$i = lc($i);
+			print $i,"\n";
+			if ( defined($args{$i}) && length($args{$i}) > 0 )
+			{
+				$ref->{$i} = $args{$i};
+				
+			} else {
+				delete $ref->{$i};
+			}
+		}
+		$self->i2indexes($ref);
+	}
+	$self->i2indexes;
 }
 
 sub status {

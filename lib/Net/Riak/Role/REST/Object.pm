@@ -1,6 +1,7 @@
 package Net::Riak::Role::REST::Object;
 
 use Moose::Role;
+use Data::Dumper;
 use JSON;
 
 sub store_object {
@@ -32,13 +33,20 @@ sub store_object {
         $request->header('link' => $self->_links_to_header($object));
     }
 
+	if ( $object->i2indexes) {
+		
+		foreach (keys %{$object->i2indexes}) {	
+			$request->header(':x-riak-index-' . lc($_) => $object->i2indexes->{$_});
+		}
+	}
+
     if (ref $object->data && $object->content_type eq 'application/json') {
         $request->content(JSON::encode_json($object->data));
     }
     else {
         $request->content($object->data);
     }
-
+   
     my $response = $self->send_request($request);
     $self->populate_object($object, $response, [200, 201, 204, 300]);
     return $object;
@@ -75,7 +83,8 @@ sub populate_object {
     $obj->exists(0);
 
     return if (!$http_response);
-
+	
+	
     my $status = $http_response->code;
 
     $obj->data($http_response->content)
@@ -91,6 +100,13 @@ sub populate_object {
           . (join(', ', @$expected))
           . ", received: ".$http_response->status_line
     }
+    
+    $HTTP::Headers::TRANSLATE_UNDERSCORE = 0;
+    foreach ( $http_response->header_field_names ) {
+    	next unless /^X-Riak-Index-(.+_bin)/;
+    	$obj->i2index({ lc($1) => $http_response->header($_) })
+    }
+    $HTTP::Headers::TRANSLATE_UNDERSCORE = 1;
 
     if ($status == 404) {
         $obj->clear;
