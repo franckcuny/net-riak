@@ -1,6 +1,7 @@
 package Net::Riak::Role::REST::Search;
 use Moose::Role;
 use JSON;
+use Data::Dumper;
 
 #ABSTRACT: Search interface
 
@@ -71,6 +72,26 @@ sub setup_indexing {
     $http_response = $self->send_request($request);
 
     JSON::decode_json($http_response->content);
+}
+
+sub i2search {
+	my $self = shift;
+	my %params = @_;
+	my $request;
+	
+	my $org_prefix = $self->prefix;
+	
+	$request = $self->new_request('GET', [
+			'buckets',
+			$params{bucket},
+			'index',
+			$params{index},
+			$params{key}
+			]
+	);
+	
+	my $http_response = $self->send_request($request);
+	JSON::decode_json($http_response->content)->{keys};
 }
 
 1;
