@@ -23,7 +23,7 @@ has ua_timeout => (
 
 has ssl_opts => (
     is => 'rw',
-	isa => 'HashRef'
+    isa => 'HashRef'
 );
 
 has useragent => (
@@ -38,19 +38,19 @@ has useragent => (
         my %opts = @LWP::Protocol::http::EXTRA_SOCK_OPTS;
         $opts{MaxLineLength} = 65_536;
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = %opts;
-		my $ua = undef;
-		
-		if ( !$self->ssl ) {
-        	$ua = LWP::UserAgent->new(
-            	timeout => $self->ua_timeout,
-            	keep_alive => 1,
-        	);
-		} else {
-        	$ua = LWP::UserAgent->new(
-            	timeout => $self->ua_timeout,
-            	keep_alive => 1,
-            	ssl_opts => $self->ssl_opts
-        	);
+        my $ua = undef;
+
+        if ( !$self->ssl ) {
+            $ua = LWP::UserAgent->new(
+                timeout => $self->ua_timeout,
+                keep_alive => 1,
+            );
+        } else {
+            $ua = LWP::UserAgent->new(
+                timeout => $self->ua_timeout,
+                keep_alive => 1,
+                ssl_opts => $self->ssl_opts
+            );
         }
 
         $ua->conn_cache(__PACKAGE__->connection_cache);
@@ -60,28 +60,3 @@ has useragent => (
 );
 
 1;
-
-__END__
-=pod
-
-=head1 NAME
-
-Net::Riak::Role::UserAgent - useragent for Net::Riak
-
-=head1 VERSION
-
-version 0.1600
-
-=head1 AUTHOR
-
-franck cuny <franck@lumberjaph.net>, robin edwards <robin.ge@gmail.com>
-
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2011 by linkfluence.
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
-
-=cut
-
