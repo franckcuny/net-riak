@@ -66,6 +66,13 @@ sub bucket {
         q     => 'field:value'
     );
 
+	# Secondary index setup (REST interface)
+    my $obj3 = $bucket->new_object('foo3', {...});
+    $obj3->i2index({ myindex_bin => 'myvalue' });
+    $obj3->store;
+
+	my @keys = $client->i2search(bucket => 'foo', index => 'myindex_bin', key => 'myvalue' );
+	
 =head1 DESCRIPTION
 
 =head2 ATTRIBUTES
