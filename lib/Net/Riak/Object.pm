@@ -73,29 +73,52 @@ sub store {
     $self->client->store_object($w, $dw, $self);
 }
 
-sub i2index {
-	my($self, $args) = @_;
+sub add_index {
+	my($self, $index, $data) = @_;
 	
-	if ( defined($args) ) {
-		my %args = %{$args};
+	if ( defined($index) && defined($data) ) {
 		my $ref = undef;
 		if ( defined($self->i2indexes) ) { $ref = $self->i2indexes; }
-		foreach my $i (keys %args)
-		{
 			
-			#$i = lc($i);
-			print $i,"\n";
-			if ( defined($args{$i}) && length($args{$i}) > 0 )
-			{
-				$ref->{$i} = $args{$i};
-				
-			} else {
-				delete $ref->{$i};
-			}
+		if ( length($index) > 4 && $index =~ /^.+_bin$/ && length($data) > 0 )
+		{
+			$ref->{$index} = $data;
+			
+		}
+		if ( length($index) > 4 && $index =~ /^.+_int$/ && $data =~ /^\d+$/ ) 
+		{
+			$ref->{$index} = $data;
 		}
 		$self->i2indexes($ref);
 	}
 	$self->i2indexes;
+}
+
+sub remove_index {
+	my($self, $index, $data) = @_;
+	if ( defined($index) && defined($data) ) {
+		if ( defined($self->i2indexes) ) { 
+			my $ref = $self->i2indexes;
+
+			if ( $index =~ /^.+_bin$/ ) {
+				if ( defined($ref->{$index}) && $ref->{$index} eq $data )
+				{
+					
+					delete(${$ref}{$index});
+				}
+				$self->i2indexes($ref);
+			}
+			if ( $index =~ /^.+_int$/ ) {
+				if ( defined($ref->{$index}) && $ref->{$index} == $data )
+				{
+					print "Deleting $index\n";
+					delete(${$ref}{$index});
+				}
+				$self->i2indexes($ref);
+			}
+			print Dumper($ref),"\n";
+		}
+	}
 }
 
 sub status {

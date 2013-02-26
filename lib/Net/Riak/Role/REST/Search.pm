@@ -74,21 +74,27 @@ sub setup_indexing {
     JSON::decode_json($http_response->content);
 }
 
-sub i2search {
-	my $self = shift;
-	my %params = @_;
+sub index {
+	my ($self, $bucket,$index,$first, $last) = @_;
+	
 	my $request;
+	my @req = ();
 	
 	my $org_prefix = $self->prefix;
-	
-	$request = $self->new_request('GET', [
+	if ( defined($bucket) && defined($index) && defined($first) )
+	{
+		@req = (
 			'buckets',
-			$params{bucket},
-			'index',
-			$params{index},
-			$params{key}
-			]
-	);
+				$bucket,
+				'index',
+				$index,
+				$first
+			);
+	
+		if ( defined($last) ) { push(@req, $last); }
+	} 
+	
+	$request = $self->new_request('GET', [ @req ] );
 	
 	my $http_response = $self->send_request($request);
 	JSON::decode_json($http_response->content)->{keys};

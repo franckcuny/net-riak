@@ -35,10 +35,10 @@ sub setup_indexing {
 
     # Secondary index setup
     my $obj3 = $bucket->new_object('foo3', {...});
-    $obj3->i2index({ myindex_bin => 'myvalue' });
+    $obj3->add_index('index', 'first');
     $obj3->store;
     
-    my @keys = $client->i2search(bucket => 'foo', index => 'myindex_bin', key => 'myvalue' );
+    my @keys = $client->index('bucket', 'myindex_bin', 'first_value' [, 'last_value'] );
     
 =head1 DESCRIPTION
 
@@ -87,11 +87,15 @@ is the default index you want to query, if no index is provided you have to add 
 
 is the number of documents you want to be returned in the response
 
-=item i2index
+=item add_index
 
 add secondary index to object
 
-=item i2search
+= item remove_index
+
+remove secondary index from object
+
+=item index
 
 Find keys via secondary index.
   

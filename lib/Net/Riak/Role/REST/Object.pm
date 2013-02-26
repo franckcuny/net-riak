@@ -103,8 +103,8 @@ sub populate_object {
     
     $HTTP::Headers::TRANSLATE_UNDERSCORE = 0;
     foreach ( $http_response->header_field_names ) {
-    	next unless /^X-Riak-Index-(.+_bin)/;
-    	$obj->i2index({ lc($1) => $http_response->header($_) })
+    	next unless /^X-Riak-Index-(.+_bin)$/ || /^X-Riak-Index-(.+_int)$/;
+    	$obj->add_index(lc($1),  $http_response->header($_) )
     }
     $HTTP::Headers::TRANSLATE_UNDERSCORE = 1;
 

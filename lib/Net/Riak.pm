@@ -14,7 +14,7 @@ has client => (
     is       => 'rw',
     isa      => Client_T,
     required => 1,
-    handles  => [qw/is_alive all_buckets server_info stats search i2search setup_indexing/]
+    handles  => [qw/is_alive all_buckets server_info stats search index setup_indexing/]
 );
 
 sub BUILDARGS {
@@ -68,10 +68,20 @@ sub bucket {
 
 	# Secondary index setup (REST interface)
     my $obj3 = $bucket->new_object('foo3', {...});
-    $obj3->i2index({ myindex_bin => 'myvalue' });
+    $obj3->add_index('myindex_bin','myvalue' );
+    $obj3->add_index('number_int', 1001);
     $obj3->store;
 
-	my @keys = $client->i2search(bucket => 'foo', index => 'myindex_bin', key => 'myvalue' );
+	# Get all keys for a specific index/value pair
+	my @keys = $client->index('mybucket', 'myindex_bin', 'myvalue' );
+	
+	# Get all keys for a range of index value pairs
+	my @keys = $client->index('mybucket', 'number_int', 500, 1500);
+	
+	# Removing a secondary index (REST interface)
+	my $new_obj = $bucket->get('foo3');
+	$new_obj->remove_index('number_int', 1001);
+	$new_obj->store;
 	
 =head1 DESCRIPTION
 
