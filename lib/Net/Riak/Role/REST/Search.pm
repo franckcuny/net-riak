@@ -1,6 +1,7 @@
 package Net::Riak::Role::REST::Search;
 use Moose::Role;
 use JSON;
+use Data::Dumper;
 
 #ABSTRACT: Search interface
 
@@ -71,6 +72,32 @@ sub setup_indexing {
     $http_response = $self->send_request($request);
 
     JSON::decode_json($http_response->content);
+}
+
+sub index {
+	my ($self, $bucket,$index,$first, $last) = @_;
+	
+	my $request;
+	my @req = ();
+	
+	my $org_prefix = $self->prefix;
+	if ( defined($bucket) && defined($index) && defined($first) )
+	{
+		@req = (
+			'buckets',
+				$bucket,
+				'index',
+				$index,
+				$first
+			);
+	
+		if ( defined($last) ) { push(@req, $last); }
+	} 
+	
+	$request = $self->new_request('GET', [ @req ] );
+	
+	my $http_response = $self->send_request($request);
+	JSON::decode_json($http_response->content)->{keys};
 }
 
 1;

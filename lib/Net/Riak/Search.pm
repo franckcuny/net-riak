@@ -33,6 +33,13 @@ sub setup_indexing {
 
     $bucket->delete_object($key, 3); # optional w val
 
+    # Secondary index setup
+    my $obj3 = $bucket->new_object('foo3', {...});
+    $obj3->add_index('index', 'first');
+    $obj3->store;
+    
+    my @keys = $client->index('bucket', 'myindex_bin', 'first_value' [, 'last_value'] );
+    
 =head1 DESCRIPTION
 
 L<Net::Riak::Search> allows you to enable indexing documents for a given bucket and querying/searching the index.
@@ -79,6 +86,19 @@ is the default index you want to query, if no index is provided you have to add 
 =item rows
 
 is the number of documents you want to be returned in the response
+
+=item add_index
+
+add secondary index to object
+
+= item remove_index
+
+remove secondary index from object
+
+=item index
+
+Find keys via secondary index.
+  
 
 =back
 
