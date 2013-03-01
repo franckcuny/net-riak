@@ -74,26 +74,18 @@ sub setup_indexing {
 }
 
 sub index {
-    my ($self, $bucket,$index,$first, $last) = @_;
+    my ($self, $bucket, $index, $first, $last) = @_;
 
     my $request;
     my @req = ();
 
     my $org_prefix = $self->prefix;
-    if ( defined($bucket) && defined($index) && defined($first) )
-    {
-        @req = (
-            'buckets',
-                $bucket,
-                'index',
-                $index,
-                $first
-            );
-
-        if ( defined($last) ) { push(@req, $last); }
+    if (defined $bucket && defined $index && defined $first) {
+        @req = ('buckets', $bucket, 'index', $index, $first);
+        push(@req, $last) if (defined $last);
     }
 
-    $request = $self->new_request('GET', [ @req ] );
+    $request = $self->new_request('GET', [ @req ]);
 
     my $http_response = $self->send_request($request);
     JSON::decode_json($http_response->content)->{keys};
