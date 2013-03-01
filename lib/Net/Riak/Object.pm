@@ -5,12 +5,12 @@ package Net::Riak::Object;
 use Moose;
 use Scalar::Util;
 use Net::Riak::Link;
-use Data::Dumper;
 
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
 with 'Net::Riak::Role::Base' => {classes =>
       [{name => 'bucket', required => 1}]};
 use Net::Riak::Types Client => {-as => 'Client_T'};
+
 has client => (
     is       => 'rw',
     isa      => Client_T,
@@ -20,12 +20,11 @@ has key => (is => 'rw', isa => 'Str', required => 0);
 has exists       => (is => 'rw', isa => 'Bool', default => 0,);
 has data         => (is => 'rw', isa => 'Any', clearer => '_clear_data');
 has vclock       => (is => 'rw', isa => 'Str', predicate => 'has_vclock');
-has vtag          => (is => 'rw', isa => 'Str');
+has vtag         => (is => 'rw', isa => 'Str');
 has content_type => (is => 'rw', isa => 'Str', default => 'application/json');
-has location     => ( is => 'rw', isa => 'Str' );
+has location     => (is => 'rw', isa => 'Str');
 has _jsonize     => (is => 'rw', isa => 'Bool', lazy => 1, default => 1);
-
-has i2indexes	=> ( is => 'rw', isa => 'HashRef' );
+has i2indexes    => (is => 'rw', isa => 'HashRef');
 
 has links => (
     traits     => ['Array'],
@@ -74,58 +73,47 @@ sub store {
 }
 
 sub add_index {
-	my($self, $index, $data) = @_;
-	
-	if ( defined($index) && defined($data) ) {
-		my $ref = undef;
-		if ( defined($self->i2indexes) ) { $ref = $self->i2indexes; }
-			
-		if ( length($index) > 4 && $index =~ /^.+_bin$/ && length($data) > 0 )
-		{
-			$ref->{$index} = $data;
-			
-		}
-		if ( length($index) > 4 && $index =~ /^.+_int$/ && $data =~ /^\d+$/ ) 
-		{
-			$ref->{$index} = $data;
-		}
-		$self->i2indexes($ref);
-	}
-	$self->i2indexes;
+    my ($self, $index, $data) = @_;
+
+    if (defined $index && defined $data) {
+        my $ref = undef;
+        $ref = $self->i2indexes
+            if (defined $self->i2indexes);
+
+        $ref->{$index} = $data
+            if (length($index) > 4 && $index =~ /^.+_bin$/ && length($data) > 0 );
+
+        $ref->{$index} = $data
+
+            if (length($index) > 4 && $index =~ /^.+_int$/ && $data =~ /^\d+$/ );
+        $self->i2indexes($ref);
+    }
+    $self->i2indexes;
 }
 
 sub remove_index {
-	my($self, $index, $data) = @_;
-	if ( defined($index) && defined($data) ) {
-		if ( defined($self->i2indexes) ) { 
-			my $ref = $self->i2indexes;
+    my ($self, $index, $data) = @_;
+    if (defined $index && defined $data && defined $self->i2indexes ) {
+        my $ref = $self->i2indexes;
 
-			if ( $index =~ /^.+_bin$/ ) {
-				if ( defined($ref->{$index}) && $ref->{$index} eq $data )
-				{
-					
-					delete(${$ref}{$index});
-				}
-				$self->i2indexes($ref);
-			}
-			if ( $index =~ /^.+_int$/ ) {
-				if ( defined($ref->{$index}) && $ref->{$index} == $data )
-				{
-					print "Deleting $index\n";
-					delete(${$ref}{$index});
-				}
-				$self->i2indexes($ref);
-			}
-			print Dumper($ref),"\n";
-		}
-	}
+        if ($index =~ /^.+_bin$/) {
+            delete ${$ref}{$index}
+                if (defined($ref->{$index}) && $ref->{$index} eq $data);
+            $self->i2indexes($ref);
+        }
+        if ( $index =~ /^.+_int$/ ) {
+            delete(${$ref}{$index})
+                if (defined($ref->{$index}) && $ref->{$index} == $data);
+            $self->i2indexes($ref);
+        }
+    }
 }
 
 sub status {
     my ($self) = @_;
     warn "DEPRECATED: status method will be removed in the 0.17 release, please use ->client->status.";
     $self->client->status;
-}   
+}
 
 sub load {
     my $self = shift;
