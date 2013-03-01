@@ -66,7 +66,7 @@ sub new_request {
 # makes a HTTP::Request returns and stores a HTTP::Response
 sub send_request {
     my ($self, $req) = @_;
-
+	
     $self->http_request($req);
 
     my $r = $self->useragent->request($req);

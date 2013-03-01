@@ -5,6 +5,7 @@ package Net::Riak::Object;
 use Moose;
 use Scalar::Util;
 use Net::Riak::Link;
+use Data::Dumper;
 
 with 'Net::Riak::Role::Replica' => {keys => [qw/r w dw/]};
 with 'Net::Riak::Role::Base' => {classes =>
@@ -23,6 +24,9 @@ has vtag          => (is => 'rw', isa => 'Str');
 has content_type => (is => 'rw', isa => 'Str', default => 'application/json');
 has location     => ( is => 'rw', isa => 'Str' );
 has _jsonize     => (is => 'rw', isa => 'Bool', lazy => 1, default => 1);
+
+has i2indexes	=> ( is => 'rw', isa => 'HashRef' );
+
 has links => (
     traits     => ['Array'],
     is         => 'rw',
@@ -67,6 +71,54 @@ sub store {
     $dw ||= $self->dw;
 
     $self->client->store_object($w, $dw, $self);
+}
+
+sub add_index {
+	my($self, $index, $data) = @_;
+	
+	if ( defined($index) && defined($data) ) {
+		my $ref = undef;
+		if ( defined($self->i2indexes) ) { $ref = $self->i2indexes; }
+			
+		if ( length($index) > 4 && $index =~ /^.+_bin$/ && length($data) > 0 )
+		{
+			$ref->{$index} = $data;
+			
+		}
+		if ( length($index) > 4 && $index =~ /^.+_int$/ && $data =~ /^\d+$/ ) 
+		{
+			$ref->{$index} = $data;
+		}
+		$self->i2indexes($ref);
+	}
+	$self->i2indexes;
+}
+
+sub remove_index {
+	my($self, $index, $data) = @_;
+	if ( defined($index) && defined($data) ) {
+		if ( defined($self->i2indexes) ) { 
+			my $ref = $self->i2indexes;
+
+			if ( $index =~ /^.+_bin$/ ) {
+				if ( defined($ref->{$index}) && $ref->{$index} eq $data )
+				{
+					
+					delete(${$ref}{$index});
+				}
+				$self->i2indexes($ref);
+			}
+			if ( $index =~ /^.+_int$/ ) {
+				if ( defined($ref->{$index}) && $ref->{$index} == $data )
+				{
+					print "Deleting $index\n";
+					delete(${$ref}{$index});
+				}
+				$self->i2indexes($ref);
+			}
+			print Dumper($ref),"\n";
+		}
+	}
 }
 
 sub status {
