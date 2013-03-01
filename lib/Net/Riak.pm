@@ -66,23 +66,23 @@ sub bucket {
         q     => 'field:value'
     );
 
-	# Secondary index setup (REST interface)
+    # Secondary index setup (REST interface)
     my $obj3 = $bucket->new_object('foo3', {...});
     $obj3->add_index('myindex_bin','myvalue' );
     $obj3->add_index('number_int', 1001);
     $obj3->store;
 
-	# Get all keys for a specific index/value pair
-	my @keys = $client->index('mybucket', 'myindex_bin', 'myvalue' );
-	
-	# Get all keys for a range of index value pairs
-	my @keys = $client->index('mybucket', 'number_int', 500, 1500);
-	
-	# Removing a secondary index (REST interface)
-	my $new_obj = $bucket->get('foo3');
-	$new_obj->remove_index('number_int', 1001);
-	$new_obj->store;
-	
+    # Get all keys for a specific index/value pair
+    my @keys = $client->index('mybucket', 'myindex_bin', 'myvalue' );
+
+    # Get all keys for a range of index value pairs
+    my @keys = $client->index('mybucket', 'number_int', 500, 1500);
+
+    # Removing a secondary index (REST interface)
+    my $new_obj = $bucket->get('foo3');
+    $new_obj->remove_index('number_int', 1001);
+    $new_obj->store;
+
 =head1 DESCRIPTION
 
 =head2 ATTRIBUTES
