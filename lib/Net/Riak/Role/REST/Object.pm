@@ -1,7 +1,6 @@
 package Net::Riak::Role::REST::Object;
 
 use Moose::Role;
-use Data::Dumper;
 use JSON;
 
 sub store_object {
@@ -33,8 +32,7 @@ sub store_object {
         $request->header('link' => $self->_links_to_header($object));
     }
 
-    if ( $object->i2indexes) {
-
+    if ($object->i2indexes) {
         foreach (keys %{$object->i2indexes}) {
             $request->header(':x-riak-index-' . lc($_) => $object->i2indexes->{$_});
         }
@@ -102,9 +100,9 @@ sub populate_object {
     }
 
     $HTTP::Headers::TRANSLATE_UNDERSCORE = 0;
-    foreach ( $http_response->header_field_names ) {
+    foreach ($http_response->header_field_names) {
         next unless /^X-Riak-Index-(.+_bin)$/ || /^X-Riak-Index-(.+_int)$/;
-        $obj->add_index(lc($1),  $http_response->header($_) )
+        $obj->add_index(lc($1),  $http_response->header($_))
     }
     $HTTP::Headers::TRANSLATE_UNDERSCORE = 1;
 
