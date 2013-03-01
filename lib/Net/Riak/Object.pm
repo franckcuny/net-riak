@@ -83,7 +83,7 @@ sub add_index {
             if (length($index) > 4 && $index =~ /^.+_int$/ && $data =~ /^\d+$/ );
         $self->i2indexes($ref);
     }
-    $self->i2indexes;
+    return $self->i2indexes;
 }
 
 sub remove_index {
@@ -102,6 +102,7 @@ sub remove_index {
             $self->i2indexes($ref);
         }
     }
+    return $self->i2indexes;
 }
 
 sub load {
