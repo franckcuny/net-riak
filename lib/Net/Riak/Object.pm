@@ -111,14 +111,13 @@ sub remove_index {
 			if ( $index =~ /^.+_int$/ ) {
 				if ( defined($ref->{$index}) && $ref->{$index} == $data )
 				{
-					print "Deleting $index\n";
 					delete(${$ref}{$index});
 				}
 				$self->i2indexes($ref);
 			}
-			print Dumper($ref),"\n";
 		}
 	}
+	$self->i2indexes;
 }
 
 sub status {
