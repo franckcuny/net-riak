@@ -34,7 +34,6 @@ has links => (
     lazy       => 1,
     default    => sub { [] },
     handles    => {
-        count_links => 'elements',
         append_link => 'push',
         has_links   => 'count',
         all_links   => 'elements',
@@ -58,10 +57,6 @@ has siblings => (
     },
     clearer => '_clear_siblings',
 );
-
-after count_links => sub {
-    warn "DEPRECATED: count_links method will be removed in the 0.17 release, please use has_links.";
-};
 
 sub store {
     my ($self, $w, $dw) = @_;
@@ -107,12 +102,6 @@ sub remove_index {
             $self->i2indexes($ref);
         }
     }
-}
-
-sub status {
-    my ($self) = @_;
-    warn "DEPRECATED: status method will be removed in the 0.17 release, please use ->client->status.";
-    $self->client->status;
 }
 
 sub load {
