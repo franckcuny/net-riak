@@ -11,7 +11,7 @@ test_riak_rest {
 	ok $obj->add_index('myindex_bin', 'value'), 'Secondary index created';
 	
 	ok $obj->store, 'Object with secondary index stored';
-	ok my $newobj->get('2ikey'), 'Object with secondary index retrieved';
+	ok my $newobj = $bucket->get('2ikey'), 'Object with secondary index retrieved';
 	ok $newobj->remove_index('myindex_bin', 'value'), 'Secondary index removed';
 	ok $newobj->store, "Object without secondary index saved";
 }
