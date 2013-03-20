@@ -16,11 +16,14 @@ sub store_object {
     my $content = {
         content_type => $object->content_type,
         value => $value,
-        usermeta => undef
     };
 
     if ($object->has_links) {
         $content->{links} = $self->_links_for_message($object);
+    }
+
+    if ($object->has_meta) {
+        $content->{usermeta} = $self->_metas_for_message($object);
     }
 
     $self->send_message(
@@ -85,6 +88,10 @@ sub populate_object {
 
     if($content->links) {
         $self->_populate_links($object, $content->links);
+    }
+
+    if($content->usermeta) {
+        $self->_populate_metas($object, $content->usermeta);
     }
 
     my $data = ($object->content_type eq 'application/json') 

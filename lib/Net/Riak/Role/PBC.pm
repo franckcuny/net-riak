@@ -8,6 +8,7 @@ with qw(
   Net::Riak::Role::PBC::Bucket
   Net::Riak::Role::PBC::MapReduce
   Net::Riak::Role::PBC::Link
+  Net::Riak::Role::PBC::Meta
   Net::Riak::Role::PBC::Object);
 
 use Net::Riak::Types 'Socket';
