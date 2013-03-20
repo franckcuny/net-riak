@@ -1,7 +1,5 @@
 package Net::Riak::Role::PBC::Bucket;
-
 use Moose::Role;
-use Data::Dumper;
 
 sub get_properties {
     my ( $self, $name, $params ) = @_;
@@ -29,7 +27,7 @@ sub get_keys {
             if ( defined $_[0]->keys ) {
                 if ($params->{cb}) {
                     $params->{cb}->($_) for @{ $_[0]->keys };
-                } 
+                }
                 else {
                     push @$keys, @{ $_[0]->keys };
                 }
@@ -37,10 +35,7 @@ sub get_keys {
         }
     );
 
-    return $params->{cb} ? undef : $keys; 
+    return $params->{cb} ? undef : $keys;
 }
 
-
-
 1;
-

@@ -23,12 +23,12 @@ sub _links_for_message {
     my ($self, $object) = @_;
 
     return [
-        map { { 
-                tag => $_->tag, 
-                key => $_->key, 
-                bucket => $_->bucket->name  
-            } 
-        } $object->all_links 
+        map { {
+                tag => $_->tag,
+                key => $_->key,
+                bucket => $_->bucket->name
+            }
+        } $object->all_links
     ]
 }
 

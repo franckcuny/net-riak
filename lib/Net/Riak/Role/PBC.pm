@@ -82,4 +82,4 @@ sub server_info {
 
 sub stats { die "->stats is only avaliable through the REST interface" }
 
-1; 
+1;

@@ -1,8 +1,6 @@
 package Net::Riak::Role::PBC::Object;
-
 use JSON;
 use Moose::Role;
-use Data::Dumper;
 use List::Util 'first';
 
 sub store_object {
@@ -10,7 +8,7 @@ sub store_object {
 
     die "Storing object without a key is not supported in the PBC interface" unless $object->key;
 
-    my $value = (ref $object->data && $object->content_type eq 'application/json') 
+    my $value = (ref $object->data && $object->content_type eq 'application/json')
             ? JSON::encode_json($object->data) : $object->data;
 
     my $content = {
@@ -94,7 +92,7 @@ sub populate_object {
         $self->_populate_metas($object, $content->usermeta);
     }
 
-    my $data = ($object->content_type eq 'application/json') 
+    my $data = ($object->content_type eq 'application/json')
         ? JSON::decode_json($content->value) : $content->value;
 
     $object->exists(1);
@@ -117,7 +115,7 @@ sub retrieve_sibling {
 
     # hack for loading 1 sibling
     if ($params->{vtag}) {
-        $resp->{content} = [ 
+        $resp->{content} = [
             first {
                 $_->vtag eq $params->{vtag}
             } @{$resp->content}
@@ -133,7 +131,7 @@ sub retrieve_sibling {
     $sibling->_jsonize($object->_jsonize);
 
     $self->populate_object($sibling, $resp);
-    
+
     $sibling;
 }
 

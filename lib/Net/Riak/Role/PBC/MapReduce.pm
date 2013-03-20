@@ -2,7 +2,6 @@ package Net::Riak::Role::PBC::MapReduce;
 use Moose::Role;
 use JSON;
 use List::Util 'sum';
-use Data::Dump 'pp';
 
 sub execute_job {
     my ($self, $job, $timeout, $returned_phases) = @_;
@@ -16,8 +15,8 @@ sub execute_job {
     my $resp = $self->send_message( MapRedReq => {
             request => $job_request,
             content_type => 'application/json'
-        }, sub { push @$results, $self->decode_phase(shift) }) 
-        or 
+        }, sub { push @$results, $self->decode_phase(shift) })
+        or
     die "MapReduce query failed!";
 
 

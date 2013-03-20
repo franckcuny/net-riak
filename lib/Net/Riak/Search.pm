@@ -1,5 +1,4 @@
-package
-Net::Riak::Search;
+package Net::Riak::Search;
 use Moose;
 
 #ABSTRACT: Search interface
@@ -37,9 +36,9 @@ sub setup_indexing {
     my $obj3 = $bucket->new_object('foo3', {...});
     $obj3->add_index('index', 'first');
     $obj3->store;
-    
+
     my @keys = $client->index('bucket', 'myindex_bin', 'first_value' [, 'last_value'] );
-    
+
 =head1 DESCRIPTION
 
 L<Net::Riak::Search> allows you to enable indexing documents for a given bucket and querying/searching the index.
@@ -98,7 +97,7 @@ remove secondary index from object
 =item index
 
 Find keys via secondary index.
-  
+
 
 =back
 
