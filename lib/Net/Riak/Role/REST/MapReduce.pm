@@ -22,6 +22,7 @@ sub execute_job {
         'POST', [$self->mapred_prefix]
     );
     $request->content($content);
+    $request->header( 'Content-Type' => 'application/json' );
 
     my $response = $self->send_request($request);
 
